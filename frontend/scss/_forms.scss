@@ -1,77 +1,157 @@
 @use 'variables' as *;
 
 .form-group {
-  margin-bottom: $spacing-md;
+  margin-bottom: var(--spacing-lg);
 
   label {
     display: block;
-    margin-bottom: $spacing-xs;
+    margin-bottom: var(--spacing-sm);
     font-weight: 500;
-    color: $gray-700;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+  }
+
+  // Foco en contenedor para iluminar label opcionalmente
+  &:focus-within label {
+    color: var(--text-main);
   }
 }
 
 .form-control {
   width: 100%;
-  padding: $spacing-sm $spacing-md;
-  border: 1px solid $gray-300;
-  border-radius: 4px;
-  font-family: $font-stack;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-family: var(--font-ui);
   font-size: 1rem;
-  transition: border-color 0.2s;
+  color: var(--text-main);
+  transition: all 0.2s ease;
 
+  // Placeholder
+  &::placeholder {
+    color: var(--text-disabled);
+  }
+
+  // Hover sutil
+  &:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  // Focus: Glow ring
   &:focus {
     outline: none;
-    border-color: $primary;
-    box-shadow: 0 0 0 2px rgba($primary, 0.2);
+    border-color: var(--primary);
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 0 3px var(--primary-glow);
   }
 
   &:disabled {
-    background-color: $gray-100;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-disabled);
     cursor: not-allowed;
+    border-color: transparent;
+  }
+}
+
+// Selects personalizados (minimalistas)
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+  
+  option {
+    background-color: var(--bg-app);
+    color: var(--text-main);
   }
 }
 
 textarea.form-control {
   resize: vertical;
-  min-height: 100px;
+  min-height: 120px;
+  line-height: 1.5;
 }
 
+// Botones unificados
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: $spacing-sm $spacing-lg;
+  padding: 0.6rem 1.2rem;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
 
+  // Primario
   &-primary {
-    background-color: $primary;
-    color: white;
+    background-color: var(--primary);
+    color: #ffffff;
 
-    &:hover { background-color: $primary-hover; }
+    &:hover:not(:disabled) { 
+      background-color: var(--primary-hover); 
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
   }
 
+  // Secundario
   &-secondary {
-    background-color: $gray-200;
-    color: $gray-800;
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
 
-    &:hover { background-color: $gray-300; }
+    &:hover:not(:disabled) { 
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
   }
 
+  // Danger
   &-danger {
-    background-color: $danger;
-    color: white;
+    background-color: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
     
-    &:hover { filter: brightness(0.9); }
+    &:hover:not(:disabled) { 
+      background-color: rgba(239, 68, 68, 0.1);
+      border-color: var(--danger);
+    }
+  }
+
+  // Action Button (Tabla)
+  &-action {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+
+    &:hover:not(:disabled) {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+    }
   }
 
   &:disabled {
-    opacity: 0.7;
+    opacity: 0.5;
     cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
   }
 }

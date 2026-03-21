@@ -7,18 +7,24 @@
   <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
-  <nav class="main-nav">
+<div class="app-wrapper">
+  <aside class="sidebar">
     <a href="/" class="nav-brand">DevSupport</a>
     <div class="nav-links" id="nav-links">
       <a href="/tickets">Tickets</a>
       <a href="/tickets?mis=true" id="nav-mis-tickets" style="display:none;">Mis Tickets</a>
       <a href="/crear" id="nav-crear" style="display:none;">Nuevo Ticket</a>
       <a href="/usuarios" id="nav-usuarios" style="display:none;">Usuarios</a>
+    </div>
+    <div class="nav-bottom">
       <a href="/login" id="nav-auth-link">Login</a>
     </div>
-  </nav>
+  </aside>
 
-  <main class="container">
+  <main class="main-content">
+    <div class="breadcrumbs mb-lg">
+      <a href="/tickets">Inicio</a> <span class="separator">/</span> <span class="current">Gestión de Usuarios</span>
+    </div>
     <h2>Gestión de Usuarios</h2>
     <div id="usuarios-error" style="color: red; margin-bottom: 1rem;"></div>
 
@@ -41,6 +47,7 @@
       </table>
     </div>
   </main>
+</div>
 
   <script type="module" src="/static/js/nav.js"></script>
   <script type="module" src="/static/js/usuarios.js"></script>

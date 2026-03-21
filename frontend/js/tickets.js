@@ -42,7 +42,7 @@ function renderTickets(tickets) {
       <td>${asignadosStr}</td>
       <td>${new Date(ticket.created_at || Date.now()).toLocaleDateString()}</td>
       <td>
-        <a href="/ticket/${ticket.id}" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.875rem; background: #e5e7eb; color: #1f2937;">Ver</a>
+        <a href="/ticket/${ticket.id}" class="btn btn-action">Ver</a>
       </td>
     </tr>`;
   }).join('');

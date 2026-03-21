@@ -1,79 +1,182 @@
-@use 'variables' as *;
+// Layout principal: Sidebar + Contenido
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: $font-stack;
-  color: $gray-900;
-  line-height: 1.5;
-  background-color: $gray-50;
-}
-
-// Navegación principal
-.main-nav {
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  padding: $spacing-md $spacing-xl;
+.app-wrapper {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
+// Sidebar Lateral
+.sidebar {
+  width: 260px;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border-color);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
 
   .nav-brand {
+    font-size: 1.5rem;
     font-weight: 700;
-    font-size: 1.25rem;
-    color: $primary;
-    text-decoration: none;
+    color: var(--text-main);
+    margin-bottom: var(--spacing-xl);
+    letter-spacing: -0.5px;
+    display: inline-block;
   }
 
   .nav-links {
     display: flex;
-    gap: $spacing-md;
+    flex-direction: column;
+    gap: var(--spacing-sm);
 
     a {
-      text-decoration: none;
-      color: $gray-700;
+      color: var(--text-muted);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: 8px;
       font-weight: 500;
-      
-      &:hover {
-        color: $primary;
+      transition: all 0.2s ease;
+
+      &:hover, &.active {
+        background-color: var(--bg-card-hover);
+        color: var(--text-main);
       }
+    }
+  }
+
+  .nav-bottom {
+    margin-top: auto;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+    
+    a {
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: all 0.2s ease;
+      &:hover { color: var(--text-main); }
     }
   }
 }
 
-// Contenedor principal
-.container {
-  max-width: $bp-lg;
-  margin: 0 auto;
-  padding: $spacing-xl;
+// Contenedor Principal (Panel Derecho)
+.main-content {
+  flex: 1;
+  margin-left: 260px; // Evitar que el sidebar lo tape
+  padding: var(--spacing-xl);
+  max-width: 1400px; // Límite para que no se extienda infinitamente
+  width: calc(100% - 260px);
+}
 
-  @media (max-width: $bp-md) {
-    padding: $spacing-md;
+// Componentes Reusables de Estructura (Cards, Flex)
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: var(--spacing-lg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.flex {
+  display: flex;
+}
+.flex-col {
+  flex-direction: column;
+}
+.items-center {
+  align-items: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.justify-center {
+  justify-content: center;
+}
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+.gap-md {
+  gap: var(--spacing-md);
+}
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+
+// Vista centrada (Para Login)
+.centered-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin-left: 0; // Sin sidebar en login
+  width: 100%;
+}
+
+// Breadcrumbs
+.breadcrumbs {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  
+  a {
+    color: var(--text-muted);
+    transition: color 0.2s;
+    &:hover { color: var(--text-main); }
+  }
+  
+  .separator { color: var(--border-color); }
+  
+  .current {
+    color: var(--primary);
+    font-weight: 500;
   }
 }
 
-// Utilidades Grid / Flex
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-sm { gap: $spacing-sm; }
-.gap-md { gap: $spacing-md; }
-.mt-sm { margin-top: $spacing-sm; }
-.mt-md { margin-top: $spacing-md; }
-.mb-sm { margin-bottom: $spacing-sm; }
-.mb-md { margin-bottom: $spacing-md; }
-
-// Tipografía base
-h1, h2, h3, h4 {
-  color: $gray-900;
-  font-weight: 600;
-  margin-bottom: $spacing-md;
+// === RESPONSIVE LAYOUT ===
+@media (max-width: 768px) {
+  .app-wrapper {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: var(--spacing-md);
+    flex-direction: row;
+    align-items: center;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    
+    .nav-brand { margin-bottom: 0; margin-right: var(--spacing-md); }
+    .nav-links { 
+      flex-direction: row; 
+      flex-wrap: wrap; 
+      gap: 0;
+      a { padding: var(--spacing-xs) var(--spacing-sm); font-size: 0.9rem; }
+    }
+    .nav-bottom {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+      margin-left: auto;
+    }
+  }
+  
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: var(--spacing-md);
+  }
 }
-
-h1 { font-size: 2rem; }
-h2 { font-size: 1.5rem; }

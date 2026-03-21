@@ -101,6 +101,10 @@ async function loadTicket() {
     const ticket = await apiGet(`/tickets/${ticketId}`);
     const estadoNombre = ticket.estado ? ticket.estado.nombre : 'Pendiente';
 
+    // Breadcrumb
+    const breadcrumbTxt = document.getElementById('breadcrumb-text');
+    if (breadcrumbTxt) breadcrumbTxt.textContent = `Ticket #${ticket.id}`;
+
     // Info básica
     titulo.textContent = ticket.titulo;
     estado.innerHTML = getBadgeEstado(ticket.estado);

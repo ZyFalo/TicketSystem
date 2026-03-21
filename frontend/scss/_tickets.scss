@@ -1,84 +1,181 @@
 @use 'variables' as *;
 
-// Tabla de tickets
+// Contenedor principal de tabla
 .tickets-table-container {
   overflow-x: auto;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
 }
 
+// Estructura de tabla super limpia
 .tickets-table {
   width: 100%;
   border-collapse: collapse;
+  color: var(--text-main);
 
   th, td {
-    padding: $spacing-md;
+    padding: 1rem 1.2rem;
     text-align: left;
-    border-bottom: 1px solid $gray-200;
+    border-bottom: 1px solid var(--border-color);
   }
 
   th {
-    background-color: $gray-50;
+    background-color: rgba(255, 255, 255, 0.02);
     font-weight: 600;
-    color: $gray-700;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border-color);
   }
 
+  // Fila
   tbody tr {
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease;
+    
     &:hover {
-      background-color: $gray-50;
+      background-color: rgba(255, 255, 255, 0.03); // Fila resalta
+    }
+    
+    // Quitar borde al último
+    &:last-child td {
+      border-bottom: none;
     }
   }
 }
 
-// Badges compartidos
+// Badges compartidos (UI Redonda estilo etiquetas)
 .badge {
-  display: inline-block;
-  padding: 0.25em 0.6em;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35em 0.75em;
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 9999px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: white;
 
-  &-pendiente { background-color: #f97316; }
-  &-abierto { background-color: $state-abierto; }
-  &-en-revision { background-color: $state-en-revision; }
-  &-en-proceso { background-color: $state-en-proceso; }
-  &-resuelto { background-color: $state-resuelto; }
-  &-cerrado { background-color: $state-cerrado; }
-  &-rechazado { background-color: #dc2626; }
+  // Clases hardcodeadas si JS no usa el color dinámico, si lo hace, se pisa
+  &-pendiente { background-color: rgba(249, 115, 22, 0.15); color: #f97316; }
+  &-abierto { background-color: var(--bg-info); color: var(--info); }
+  &-en-revision { background-color: var(--bg-warning); color: var(--warning); }
+  &-en-proceso { background-color: var(--bg-process); color: var(--process); }
+  &-resuelto { background-color: var(--bg-success); color: var(--success); }
+  &-cerrado { background-color: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
+  &-rechazado { background-color: var(--bg-danger); color: var(--danger); }
 
-  &-alta { background-color: $danger; }
-  &-media { background-color: $warning; }
-  &-baja { background-color: $success; }
+  &-alta { background-color: var(--bg-danger); color: var(--danger); box-shadow: inset 0 0 0 1px var(--danger); }
+  &-media { background-color: var(--bg-warning); color: var(--warning); box-shadow: inset 0 0 0 1px var(--warning); }
+  &-baja { background-color: var(--bg-success); color: var(--success); box-shadow: inset 0 0 0 1px var(--success); }
 }
 
 // Layout del detalle de ticket
 .ticket-detail-header {
-  background: white;
-  padding: $spacing-lg;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  margin-bottom: $spacing-lg;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: var(--spacing-lg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-bottom: var(--spacing-lg);
+
+  h2 {
+    margin: 0;
+    color: var(--text-main);
+  }
 
   .ticket-meta {
     display: flex;
-    gap: $spacing-md;
-    margin-top: $spacing-sm;
-    color: $gray-700;
-    font-size: 0.875rem;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    strong {
+      color: var(--text-main);
+    }
+  }
+}
+
+// Contenedores de estado/asignación
+.gestion-estado-container {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: var(--spacing-lg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-bottom: var(--spacing-lg);
+  
+  h3 {
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
   }
 }
 
 // Historiales lado a lado
 .historial-container {
   display: flex;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
 
   & > div {
     flex: 1;
+    min-width: 300px; // Si se achica mucho la pantalla
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-bottom: 0 !important; // override inline HTML styles if any
+  }
+}
+
+// Filtros Compactos
+.card-compact {
+  padding: var(--spacing-sm) var(--spacing-lg);
+}
+
+.filters-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm) var(--spacing-md);
+  
+  .form-group {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    label {
+      margin-bottom: 0;
+      font-size: 0.8rem;
+    }
+
+    select.form-control {
+      padding-top: 0.4rem;
+      padding-bottom: 0.4rem;
+    }
   }
 }
