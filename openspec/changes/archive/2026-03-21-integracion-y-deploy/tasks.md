@@ -19,6 +19,6 @@
 
 ## 4. Deploy Railway
 
-- [ ] 4.1 Configurar variables de entorno en Railway: DATABASE_URL (PostgreSQL addon), SECRET_KEY
-- [ ] 4.2 Deploy y verificar que la aplicación funciona en la URL pública
+- [x] 4.1 Configurar variables de entorno en Railway: DATABASE_URL (PostgreSQL addon), SECRET_KEY
+- [x] 4.2 Deploy y verificar que la aplicación funciona en la URL pública
 - [x] 4.3 Crear README.md con instrucciones de setup local (docker-compose up) y deploy (Railway)
