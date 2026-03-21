@@ -1,0 +1,163 @@
+// ═══════════════════════════════════════════════════════
+// Design Tokens — Dark mode (default) + Light mode
+// ═══════════════════════════════════════════════════════
+
+:root {
+  // ─── Backgrounds ─────────────────────────────────────
+  --bg-base: #08080c;
+  --bg-surface: #111116;
+  --bg-elevated: #1a1a21;
+  --bg-inset: #0a0a0e;
+
+  // ─── Borders ─────────────────────────────────────────
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --border-active: rgba(255, 255, 255, 0.18);
+
+  // ─── Accent (Naranja / Cobre) ────────────────────────
+  --accent: #e8764a;
+  --accent-hover: #d4623a;
+  --accent-subtle: rgba(232, 118, 74, 0.12);
+  --accent-glow: rgba(232, 118, 74, 0.25);
+
+  // ─── Text ────────────────────────────────────────────
+  --text-primary: #f0f0f2;
+  --text-secondary: #8a8a95;
+  --text-disabled: #555560;
+  --text-inverse: #08080c;
+
+  // ─── Semantic ────────────────────────────────────────
+  --success: #10b981;
+  --success-subtle: rgba(16, 185, 129, 0.12);
+  --success-text: #34d399;
+
+  --error: #ef4444;
+  --error-subtle: rgba(239, 68, 68, 0.10);
+  --error-text: #f87171;
+
+  --warning: #f59e0b;
+  --warning-subtle: rgba(245, 158, 11, 0.12);
+  --warning-text: #fbbf24;
+
+  --info: #0ea5e9;
+  --info-subtle: rgba(14, 165, 233, 0.12);
+  --info-text: #38bdf8;
+
+  --process: #a855f7;
+  --process-subtle: rgba(168, 85, 247, 0.12);
+  --process-text: #c084fc;
+
+  // ─── Estado badges (background + foreground) ─────────
+  --badge-pendiente-bg: rgba(249, 115, 22, 0.14);
+  --badge-pendiente-fg: #fb923c;
+  --badge-abierto-bg: rgba(14, 165, 233, 0.14);
+  --badge-abierto-fg: #38bdf8;
+  --badge-en-revision-bg: rgba(245, 158, 11, 0.14);
+  --badge-en-revision-fg: #fbbf24;
+  --badge-en-proceso-bg: rgba(168, 85, 247, 0.14);
+  --badge-en-proceso-fg: #c084fc;
+  --badge-resuelto-bg: rgba(16, 185, 129, 0.14);
+  --badge-resuelto-fg: #34d399;
+  --badge-cerrado-bg: rgba(148, 163, 184, 0.14);
+  --badge-cerrado-fg: #94a3b8;
+  --badge-rechazado-bg: rgba(239, 68, 68, 0.14);
+  --badge-rechazado-fg: #f87171;
+
+  // ─── Prioridad badges ────────────────────────────────
+  --badge-alta-bg: rgba(239, 68, 68, 0.14);
+  --badge-alta-fg: #f87171;
+  --badge-media-bg: rgba(245, 158, 11, 0.14);
+  --badge-media-fg: #fbbf24;
+  --badge-baja-bg: rgba(16, 185, 129, 0.14);
+  --badge-baja-fg: #34d399;
+
+  // ─── Rol badges ──────────────────────────────────────
+  --badge-cliente-bg: rgba(14, 165, 233, 0.14);
+  --badge-cliente-fg: #38bdf8;
+  --badge-developer-bg: rgba(168, 85, 247, 0.14);
+  --badge-developer-fg: #c084fc;
+  --badge-senior-bg: rgba(232, 118, 74, 0.14);
+  --badge-senior-fg: #e8764a;
+
+  // ─── Spacing ─────────────────────────────────────────
+  --sp-xs: 0.25rem;
+  --sp-sm: 0.5rem;
+  --sp-md: 1rem;
+  --sp-lg: 1.5rem;
+  --sp-xl: 2rem;
+  --sp-2xl: 3rem;
+  --sp-3xl: 4rem;
+
+  // ─── Typography ──────────────────────────────────────
+  --font-display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+
+  // ─── Radii ───────────────────────────────────────────
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  // ─── Shadows ─────────────────────────────────────────
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.3);
+
+  // ─── Z-index ─────────────────────────────────────────
+  --z-navbar: 100;
+  --z-dropdown: 200;
+  --z-toast: 500;
+}
+
+// ═══════════════════════════════════════════════════════
+// Light Theme
+// ═══════════════════════════════════════════════════════
+
+[data-theme="light"] {
+  --bg-base: #f8f7f5;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f0efed;
+  --bg-inset: #e8e7e4;
+
+  --border: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.15);
+  --border-active: rgba(0, 0, 0, 0.22);
+
+  --accent: #d4623a;
+  --accent-hover: #c4522a;
+  --accent-subtle: rgba(212, 98, 58, 0.10);
+  --accent-glow: rgba(212, 98, 58, 0.20);
+
+  --text-primary: #1a1a1f;
+  --text-secondary: #6b6b75;
+  --text-disabled: #a0a0a8;
+  --text-inverse: #f0f0f2;
+
+  --success-text: #059669;
+  --error-text: #dc2626;
+  --warning-text: #d97706;
+  --info-text: #0284c7;
+  --process-text: #7c3aed;
+
+  --badge-pendiente-fg: #ea580c;
+  --badge-abierto-fg: #0284c7;
+  --badge-en-revision-fg: #d97706;
+  --badge-en-proceso-fg: #7c3aed;
+  --badge-resuelto-fg: #059669;
+  --badge-cerrado-fg: #64748b;
+  --badge-rechazado-fg: #dc2626;
+
+  --badge-alta-fg: #dc2626;
+  --badge-media-fg: #d97706;
+  --badge-baja-fg: #059669;
+
+  --badge-cliente-fg: #0284c7;
+  --badge-developer-fg: #7c3aed;
+  --badge-senior-fg: #d4623a;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.10);
+}

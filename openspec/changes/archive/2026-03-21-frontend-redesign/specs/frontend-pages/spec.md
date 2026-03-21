@@ -1,9 +1,4 @@
-# frontend-pages Specification
-
-## Purpose
-Define las páginas HTML del sistema: landing, login, creación de tickets, listado, detalle y navegación compartida.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Página de inicio (index.html)
 El sistema SHALL mostrar una landing page con hero section (título con tipografía serif display incluyendo un animated text cycle que rota palabras con transición blur+slide, subtítulo, CTAs), sección Bento Grid de funcionalidades (grid asimétrico con cards de diferentes tamaños, hover con CTA reveal), sección de testimonios con columnas scrolling vertical infinito. La página SHALL usar el layout de top navbar compartido.

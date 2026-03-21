@@ -1,53 +1,85 @@
+import { toggleTheme, updateToggleIcon } from './theme.js';
 import { apiGet, apiPost } from './api.js';
 
-async function setupNav() {
+document.addEventListener('DOMContentLoaded', () => {
+  // Theme
+  updateToggleIcon();
+  const themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+
+  // Hamburger menu
+  const hamburger = document.getElementById('nav-hamburger');
+  const mobileMenu = document.getElementById('nav-mobile-menu');
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('is-open');
+      mobileMenu.classList.toggle('is-open');
+    });
+  }
+
+  // Active nav link
+  const path = window.location.pathname;
+  document.querySelectorAll('.nav-link').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === path) {
+      link.classList.add('nav-link--active');
+    } else if (path.startsWith('/ticket/') && href === '/tickets') {
+      link.classList.add('nav-link--active');
+    }
+  });
+
+  // Auth
   const authLink = document.getElementById('nav-auth-link');
-  const navCrear = document.getElementById('nav-crear');
-  const navUsuarios = document.getElementById('nav-usuarios');
-  const navMisTickets = document.getElementById('nav-mis-tickets');
   if (!authLink) return;
 
-  try {
-    const user = await apiGet('/me');
+  apiGet('/me').then(user => {
+    if (!user) return;
 
-    if (user) {
-      authLink.textContent = `Logout (${user.nombre})`;
-      authLink.href = '#';
-      authLink.addEventListener('click', async (e) => {
-        e.preventDefault();
-        try { await apiPost('/logout'); } catch (_) {}
-        window.location.href = '/login';
-      });
+    window.__userRole = user.rol;
+    window.__userId = user.id;
 
-      window.__userRole = user.rol;
-      window.__userId = user.id;
+    // Convert auth link to logout button
+    authLink.textContent = `Logout (${user.nombre})`;
+    authLink.href = '#';
+    authLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try { await apiPost('/logout'); } catch (_) {}
+      window.location.href = '/login';
+    });
 
-      if (user.rol === 'cliente') {
-        if (navCrear) navCrear.style.display = '';
-        if (navMisTickets) navMisTickets.style.display = '';
-      } else if (user.rol === 'developer') {
-        // Developer: solo Tickets (ya visible por defecto)
-      } else if (user.rol === 'senior') {
-        if (navCrear) navCrear.style.display = '';
-        if (navUsuarios) navUsuarios.style.display = '';
-      }
+    // Show/hide nav links based on role (desktop + mobile)
+    if (user.rol === 'cliente') {
+      showEl('nav-crear');
+      showEl('nav-crear-m');
+      showEl('nav-mis-tickets');
+      showEl('nav-mis-tickets-m');
+    } else if (user.rol === 'senior') {
+      showEl('nav-crear');
+      showEl('nav-crear-m');
+      showEl('nav-usuarios');
+      showEl('nav-usuarios-m');
+    }
+    // developer: nothing extra
 
-      // Botones del landing: redirigir a rutas reales si autenticado
-      const btnCrearLanding = document.getElementById('btn-crear-landing');
-      const btnVerLanding = document.getElementById('btn-ver-landing');
-      if (btnVerLanding) btnVerLanding.href = '/tickets';
-      if (btnCrearLanding) {
-        if (user.rol === 'cliente' || user.rol === 'senior') {
-          btnCrearLanding.href = '/crear';
-        } else {
-          btnCrearLanding.style.display = 'none';
-        }
+    // Landing page buttons
+    const btnVer = document.getElementById('btn-ver-landing');
+    const btnCrear = document.getElementById('btn-crear-landing');
+    if (btnVer) btnVer.href = '/tickets';
+    if (btnCrear) {
+      if (user.rol === 'developer') {
+        btnCrear.hidden = true;
+      } else {
+        btnCrear.href = '/crear';
       }
     }
-  } catch (err) {
+  }).catch(() => {
+    // Not logged in — auth link stays as Login
     authLink.textContent = 'Login';
     authLink.href = '/login';
-  }
-}
+  });
+});
 
-document.addEventListener('DOMContentLoaded', setupNav);
+function showEl(id) {
+  const el = document.getElementById(id);
+  if (el) el.hidden = false;
+}

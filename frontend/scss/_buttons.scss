@@ -1,0 +1,114 @@
+// ═══════════════════════════════════════════════════════
+// Buttons
+// ═══════════════════════════════════════════════════════
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xs);
+  padding: 0.6rem 1.3rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1.4;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// Primary — accent orange
+.btn-primary {
+  background-color: var(--accent);
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px var(--accent-glow);
+    color: #ffffff;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+// Secondary — ghost with border
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+
+  &:hover:not(:disabled) {
+    background-color: var(--bg-elevated);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+}
+
+// Danger — destructive
+.btn-danger {
+  background-color: transparent;
+  color: var(--error-text);
+  border: 1px solid var(--error-subtle);
+
+  &:hover:not(:disabled) {
+    background-color: var(--error-subtle);
+    border-color: var(--error);
+  }
+}
+
+// Ghost — no border, subtle hover
+.btn-ghost {
+  background: none;
+  color: var(--text-secondary);
+  border: none;
+  padding: var(--sp-xs) var(--sp-sm);
+
+  &:hover:not(:disabled) {
+    color: var(--accent);
+    background-color: var(--accent-subtle);
+  }
+}
+
+// Action — small, for table rows
+.btn-action {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.82rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+
+  &:hover:not(:disabled) {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px var(--accent-glow);
+  }
+}
+
+// Link-style button
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  padding: 0;
+  font-size: inherit;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover { color: var(--accent-hover); }
+}

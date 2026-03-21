@@ -1,4 +1,5 @@
 import { apiPost } from './api.js';
+import { showToast } from './toast.js';
 
 const loginSection = document.getElementById('login-section');
 const registerSection = document.getElementById('register-section');
@@ -15,15 +16,19 @@ const registerError = document.getElementById('register-error');
 // Toggle forms
 btnShowRegister.addEventListener('click', (e) => {
   e.preventDefault();
-  loginSection.style.display = 'none';
-  registerSection.style.display = 'flex';
+  loginSection.classList.remove('is-visible');
+  loginSection.classList.add('is-hidden');
+  registerSection.classList.remove('is-hidden');
+  registerSection.classList.add('is-visible');
   loginError.textContent = '';
 });
 
 btnShowLogin.addEventListener('click', (e) => {
   e.preventDefault();
-  registerSection.style.display = 'none';
-  loginSection.style.display = 'flex';
+  registerSection.classList.remove('is-visible');
+  registerSection.classList.add('is-hidden');
+  loginSection.classList.remove('is-hidden');
+  loginSection.classList.add('is-visible');
   registerError.textContent = '';
 });
 
@@ -38,7 +43,7 @@ loginForm.addEventListener('submit', async (e) => {
     await apiPost('/login', { email, password });
     window.location.href = '/tickets';
   } catch (err) {
-    loginError.textContent = err.data?.message || err.data || 'Error al iniciar sesión';
+    showToast(err.data?.message || err.data || 'Error al iniciar sesion', 'error');
   }
 });
 
@@ -52,8 +57,9 @@ registerForm.addEventListener('submit', async (e) => {
   registerError.textContent = '';
   try {
     await apiPost('/register', { nombre, email, password });
+    showToast('Cuenta creada exitosamente', 'success');
     window.location.href = '/tickets';
   } catch (err) {
-    registerError.textContent = err.data?.message || err.data || 'Error al registrarse';
+    showToast(err.data?.message || err.data || 'Error al registrarse', 'error');
   }
 });

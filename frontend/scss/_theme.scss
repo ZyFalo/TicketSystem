@@ -1,0 +1,36 @@
+// ═══════════════════════════════════════════════════════
+// Theme Toggle + Light mode overrides
+// ═══════════════════════════════════════════════════════
+
+// Light mode navbar backdrop
+[data-theme="light"] {
+  .navbar {
+    background-color: rgba(248, 247, 245, 0.88);
+  }
+
+  // Highlight.js light override
+  .hljs {
+    color: #1a1a1f;
+  }
+
+  pre {
+    border-color: var(--border);
+  }
+
+  // Skeleton shimmer for light mode
+  .skeleton-line,
+  .skeleton-rect,
+  .skeleton-circle,
+  .skeleton-badge,
+  .skeleton-cell,
+  .skeleton-title,
+  .skeleton-meta-item {
+    background: linear-gradient(
+      90deg,
+      var(--bg-elevated) 0%,
+      var(--bg-surface) 40%,
+      var(--bg-elevated) 80%
+    );
+    background-size: 800px 100%;
+  }
+}

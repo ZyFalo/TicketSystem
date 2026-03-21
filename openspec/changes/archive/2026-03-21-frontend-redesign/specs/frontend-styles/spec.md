@@ -1,9 +1,4 @@
-# frontend-styles Specification
-
-## Purpose
-Define el sistema de estilos SCSS del frontend: variables, layout, formularios, indicadores de estado y bloques de código.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Sistema de variables SCSS
 El proyecto SHALL definir design tokens como CSS custom properties (no SCSS variables) en `_tokens.scss` con dos esquemas: `:root` (dark, default) y `[data-theme="light"]`. Los tokens MUST cubrir: colores de fondo (base, surface, elevated), acento (naranja/cobre #e8764a), texto (primary, secondary, disabled), bordes, semánticos (success, error, warning, info), tipografía (display serif, body sans, mono), y spacing.
@@ -23,13 +18,6 @@ El proyecto SHALL definir un layout con **top navbar** horizontal sticky, conten
 - **WHEN** el viewport es menor a 768px
 - **THEN** el navbar muestra un botón hamburger que despliega los links verticalmente
 
-### Requirement: Estilos de formularios
-El proyecto SHALL estilizar inputs, selects, textareas y botones con un diseño consistente en _forms.scss.
-
-#### Scenario: Formularios uniformes
-- **WHEN** se visualiza cualquier formulario (login, registro, crear ticket, observaciones)
-- **THEN** todos los elementos de formulario tienen el mismo estilo visual
-
 ### Requirement: Indicadores visuales de estado
 El proyecto SHALL diferenciar cada estado con **clases CSS** (no estilos inline). Cada estado MUST tener una clase `badge--{nombre}` con fondo translúcido + texto coloreado, funcional en ambos temas (dark y light).
 
@@ -45,6 +33,8 @@ El proyecto SHALL estilizar los bloques de código con fondo más oscuro que la 
 - **THEN** tiene fondo #0a0a0e, fuente mono, padding generoso y bordes ghost
 - **WHEN** se muestra un fragmento de código en light mode
 - **THEN** tiene fondo #f0efed, misma fuente mono, mismos bordes adaptados
+
+## ADDED Requirements
 
 ### Requirement: Tipografía dual con Google Fonts
 El sistema SHALL cargar `DM Serif Display` (italic, para headings de impacto) y `DM Sans` (para body/UI) desde Google Fonts, y `JetBrains Mono` para código. La carga MUST usar `font-display: swap` para evitar FOIT.

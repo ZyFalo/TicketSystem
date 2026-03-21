@@ -1,0 +1,86 @@
+// ═══════════════════════════════════════════════════════
+// Global Reset + Base Typography
+// ═══════════════════════════════════════════════════════
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+// ─── Typography ────────────────────────────────────────
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: var(--sp-sm);
+}
+
+// Display headings use serif italic
+.display-heading {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.25rem; }
+
+p {
+  color: var(--text-secondary);
+  margin-bottom: var(--sp-md);
+
+  &:last-child { margin-bottom: 0; }
+}
+
+// ─── Links ─────────────────────────────────────────────
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--accent-hover);
+  }
+}
+
+// ─── Images ────────────────────────────────────────────
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+// ─── Lists ─────────────────────────────────────────────
+
+ul, ol {
+  list-style: none;
+}
+
+// ─── Selection ─────────────────────────────────────────
+
+::selection {
+  background-color: var(--accent-subtle);
+  color: var(--text-primary);
+}

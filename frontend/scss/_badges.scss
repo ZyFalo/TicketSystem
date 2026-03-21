@@ -1,0 +1,74 @@
+// ═══════════════════════════════════════════════════════
+// Badges — Unified: estados, prioridades, roles
+// ═══════════════════════════════════════════════════════
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25em 0.7em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  line-height: 1.5;
+
+  // ─── Estado ──────────────────────────────────────────
+  &--pendiente {
+    background-color: var(--badge-pendiente-bg);
+    color: var(--badge-pendiente-fg);
+  }
+  &--abierto {
+    background-color: var(--badge-abierto-bg);
+    color: var(--badge-abierto-fg);
+  }
+  &--en-revision {
+    background-color: var(--badge-en-revision-bg);
+    color: var(--badge-en-revision-fg);
+  }
+  &--en-proceso {
+    background-color: var(--badge-en-proceso-bg);
+    color: var(--badge-en-proceso-fg);
+  }
+  &--resuelto {
+    background-color: var(--badge-resuelto-bg);
+    color: var(--badge-resuelto-fg);
+  }
+  &--cerrado {
+    background-color: var(--badge-cerrado-bg);
+    color: var(--badge-cerrado-fg);
+  }
+  &--rechazado {
+    background-color: var(--badge-rechazado-bg);
+    color: var(--badge-rechazado-fg);
+  }
+
+  // ─── Prioridad ───────────────────────────────────────
+  &--alta {
+    background-color: var(--badge-alta-bg);
+    color: var(--badge-alta-fg);
+  }
+  &--media {
+    background-color: var(--badge-media-bg);
+    color: var(--badge-media-fg);
+  }
+  &--baja {
+    background-color: var(--badge-baja-bg);
+    color: var(--badge-baja-fg);
+  }
+
+  // ─── Rol ─────────────────────────────────────────────
+  &--cliente {
+    background-color: var(--badge-cliente-bg);
+    color: var(--badge-cliente-fg);
+  }
+  &--developer {
+    background-color: var(--badge-developer-bg);
+    color: var(--badge-developer-fg);
+  }
+  &--senior {
+    background-color: var(--badge-senior-bg);
+    color: var(--badge-senior-fg);
+  }
+}

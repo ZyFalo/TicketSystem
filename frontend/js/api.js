@@ -14,7 +14,7 @@ async function handleResponse(response) {
 
   const contentType = response.headers.get('content-type');
   let data;
-  
+
   if (contentType && contentType.includes('application/json')) {
     data = await response.json();
   } else {
@@ -59,6 +59,19 @@ export async function apiGet(endpoint, params = {}) {
 export async function apiPost(endpoint, body) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(body)
+  });
+
+  return handleResponse(response);
+}
+
+/**
+ * Perform PUT request
+ */
+export async function apiPut(endpoint, body) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify(body)
   });

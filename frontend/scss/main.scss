@@ -1,5 +1,33 @@
-@use 'variables';
+// ═══════════════════════════════════════════════════════
+// Main SCSS — Import order matters
+// ═══════════════════════════════════════════════════════
+
+// 1. Foundation
+@use 'tokens';
+@use 'reset';
+
+// 2. Layout
+@use 'navbar';
 @use 'layout';
+
+// 3. Components
+@use 'buttons';
 @use 'forms';
-@use 'tickets';
-@use 'code-review';
+@use 'cards';
+@use 'tables';
+@use 'badges';
+@use 'code';
+
+// 4. Features
+@use 'toasts';
+@use 'skeletons';
+@use 'animations';
+@use 'ticket-detail';
+
+// 5. Landing page
+@use 'text-cycle';
+@use 'bento';
+@use 'testimonials';
+
+// 6. Theme overrides (last)
+@use 'theme';

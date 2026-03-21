@@ -1,0 +1,125 @@
+// ═══════════════════════════════════════════════════════
+// Animations & Transitions
+// ═══════════════════════════════════════════════════════
+
+// ─── Keyframes ─────────────────────────────────────────
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// ─── Animation Classes ─────────────────────────────────
+
+.animate-in {
+  animation: fadeInUp 0.4s ease both;
+}
+
+.animate-fade {
+  animation: fadeIn 0.3s ease both;
+}
+
+.animate-scale {
+  animation: scaleIn 0.3s ease both;
+}
+
+// Stagger delays
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.10s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.20s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.30s; }
+
+// ─── Section Transitions (show/hide) ───────────────────
+
+.section-collapsible {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.35s ease;
+  padding-top: 0;
+  padding-bottom: 0;
+
+  &.is-visible {
+    max-height: 600px;
+    opacity: 1;
+    padding-top: var(--sp-md);
+    padding-bottom: var(--sp-md);
+  }
+}
+
+// ─── Login Form Transition ─────────────────────────────
+
+.login-form-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-panel {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+
+  &.is-hidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+  }
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+// ─── Table Row Animation ───────────────────────────────
+
+.animate-rows {
+  tr {
+    animation: fadeInUp 0.3s ease both;
+
+    @for $i from 1 through 20 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.04}s;
+      }
+    }
+  }
+}

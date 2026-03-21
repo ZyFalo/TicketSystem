@@ -1,0 +1,286 @@
+// ═══════════════════════════════════════════════════════
+// Ticket Detail Page — 2 Column Layout
+// ═══════════════════════════════════════════════════════
+
+// ─── Header (full width) ───────────────────────────────
+
+.ticket-header {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--sp-lg);
+}
+
+.ticket-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sp-md);
+}
+
+.ticket-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.ticket-badges {
+  display: flex;
+  gap: var(--sp-sm);
+  flex-shrink: 0;
+}
+
+.ticket-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-sm) var(--sp-lg);
+  margin-top: var(--sp-md);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  strong { color: var(--text-primary); }
+}
+
+// ─── 2-Column Grid ─────────────────────────────────────
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--sp-lg);
+  align-items: start;
+}
+
+.detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-lg);
+  min-width: 0;
+}
+
+.detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+  position: sticky;
+  top: 76px; // navbar height + spacing
+}
+
+// ─── Card section title ────────────────────────────────
+
+.card-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: var(--sp-md);
+  padding-bottom: var(--sp-sm);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.text-prewrap {
+  white-space: pre-wrap;
+  line-height: 1.65;
+  color: var(--text-primary);
+}
+
+// ─── Sidebar Panels ────────────────────────────────────
+
+.sidebar-panel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-panel-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: var(--sp-md);
+  padding-bottom: var(--sp-sm);
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-field {
+  margin-bottom: var(--sp-md);
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.sidebar-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: var(--sp-xs);
+}
+
+.btn-sidebar-full {
+  width: 100%;
+  margin-top: var(--sp-sm);
+}
+
+// ─── Alert Sections (rejection, resolution) ────────────
+
+.alert-section {
+  border-radius: var(--radius-lg);
+  padding: var(--sp-lg);
+  margin-bottom: var(--sp-lg);
+
+  .alert-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: var(--sp-sm);
+  }
+
+  .alert-body {
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  &--danger {
+    background-color: var(--error-subtle);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+
+    .alert-title { color: var(--error-text); }
+  }
+
+  &--success {
+    background-color: var(--success-subtle);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+
+    .alert-title { color: var(--success-text); }
+  }
+}
+
+// ─── Estado tooltip ────────────────────────────────────
+
+.estado-tooltip {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--warning-text);
+  margin-top: var(--sp-xs);
+  line-height: 1.4;
+}
+
+// ─── History entries ───────────────────────────────────
+
+.history-entry {
+  display: flex;
+  gap: 0.6rem;
+  padding: var(--sp-xs) 0;
+  font-size: 0.82rem;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+
+  &:last-child { border-bottom: none; }
+
+  .history-date {
+    color: var(--text-secondary);
+    min-width: 75px;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+  }
+}
+
+// ─── Observaciones ─────────────────────────────────────
+
+.observations-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+}
+
+.observacion-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-md);
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+
+  .obs-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--sp-sm);
+
+    strong {
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+  }
+
+  .obs-content {
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+}
+
+.obs-form {
+  .divider {
+    margin: var(--sp-lg) 0;
+  }
+}
+
+// ─── Assignees scrollable ──────────────────────────────
+
+.assignees-list {
+  max-height: 180px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-hover);
+    border-radius: 2px;
+  }
+}
+
+// ─── Responsive: stack on mobile ───────────────────────
+
+@media (max-width: 1024px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-sidebar {
+    position: static;
+    // On mobile, show sidebar panels in a 2-col mini-grid
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-md);
+  }
+}
+
+@media (max-width: 640px) {
+  .detail-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-header-top {
+    flex-direction: column;
+  }
+
+  .ticket-meta {
+    gap: var(--sp-sm);
+  }
+}

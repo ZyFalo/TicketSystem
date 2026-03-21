@@ -1,0 +1,196 @@
+// ═══════════════════════════════════════════════════════
+// Top Navbar — horizontal sticky
+// ═══════════════════════════════════════════════════════
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-navbar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-sm) var(--sp-xl);
+  background-color: rgba(8, 8, 12, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  min-height: 60px;
+
+  [data-theme="light"] & {
+    background-color: rgba(248, 247, 245, 0.85);
+  }
+}
+
+.nav-brand {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.35rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+  flex-shrink: 0;
+
+  &:hover { color: var(--accent); }
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-xs);
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: var(--sp-xs) var(--sp-md);
+  border-radius: var(--radius-sm);
+  transition: color 0.2s ease, background-color 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-elevated);
+  }
+
+  &--active {
+    color: var(--accent);
+
+    &:hover { color: var(--accent-hover); }
+  }
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  flex-shrink: 0;
+}
+
+.nav-user {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  padding: var(--sp-xs) var(--sp-sm);
+  border-radius: var(--radius-sm);
+
+  &:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-elevated);
+  }
+}
+
+// ─── Theme Toggle ──────────────────────────────────────
+
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+  width: 34px;
+  height: 34px;
+
+  svg { width: 16px; height: 16px; }
+
+  &:hover {
+    color: var(--accent);
+    border-color: var(--border-hover);
+    background-color: var(--bg-elevated);
+  }
+}
+
+// ─── Hamburger (mobile) ────────────────────────────────
+
+.nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: var(--text-primary);
+
+  span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: currentColor;
+    margin: 4px 0;
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  &.is-open {
+    span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+    span:nth-child(2) { opacity: 0; }
+    span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+  }
+}
+
+// ─── Mobile Nav ────────────────────────────────────────
+
+.nav-mobile-menu {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  padding: var(--sp-md);
+  z-index: var(--z-navbar);
+  flex-direction: column;
+  gap: var(--sp-xs);
+  animation: fadeSlideDown 0.2s ease;
+
+  &.is-open {
+    display: flex;
+  }
+
+  .nav-link {
+    padding: var(--sp-sm) var(--sp-md);
+    border-radius: var(--radius-sm);
+  }
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Responsive ────────────────────────────────────────
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: var(--sp-sm) var(--sp-md);
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-hamburger {
+    display: block;
+  }
+
+  .nav-right {
+    gap: var(--sp-xs);
+  }
+
+  .nav-user {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

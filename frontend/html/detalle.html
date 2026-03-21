@@ -4,152 +4,198 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Tickets - Detalle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/main.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.x/styles/github-dark.min.css">
+  <script type="module" src="/static/js/theme.js"></script>
 </head>
 <body>
-  <nav class="main-nav">
+  <nav class="navbar">
     <a href="/" class="nav-brand">DevSupport</a>
     <div class="nav-links" id="nav-links">
-      <a href="/tickets">Tickets</a>
-      <a href="/tickets?mis=true" id="nav-mis-tickets" style="display:none;">Mis Tickets</a>
-      <a href="/crear" id="nav-crear" style="display:none;">Nuevo Ticket</a>
-      <a href="/usuarios" id="nav-usuarios" style="display:none;">Usuarios</a>
-      <a href="/login" id="nav-auth-link">Login</a>
+      <a href="/tickets" class="nav-link">Tickets</a>
+      <a href="/tickets?mis=true" class="nav-link" id="nav-mis-tickets" hidden>Mis Tickets</a>
+      <a href="/crear" class="nav-link" id="nav-crear" hidden>Nuevo Ticket</a>
+      <a href="/usuarios" class="nav-link" id="nav-usuarios" hidden>Usuarios</a>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema"></button>
+      <a href="/login" class="nav-user" id="nav-auth-link">Login</a>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
+  <div class="nav-mobile-menu" id="nav-mobile-menu">
+    <a href="/tickets" class="nav-link">Tickets</a>
+    <a href="/tickets?mis=true" class="nav-link" id="nav-mis-tickets-m" hidden>Mis Tickets</a>
+    <a href="/crear" class="nav-link" id="nav-crear-m" hidden>Nuevo Ticket</a>
+    <a href="/usuarios" class="nav-link" id="nav-usuarios-m" hidden>Usuarios</a>
+  </div>
 
-  <main class="container">
-    <div id="loading" style="text-align: center; color: #6b7280; padding: 2rem;">Cargando ticket...</div>
-    <div id="error" style="color: red; padding: 2rem; display: none;"></div>
+  <main>
+    <div class="container">
+      <div class="main-content">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs">
+          <a href="/tickets">Tickets</a>
+          <span class="separator">/</span>
+          <span class="current" id="breadcrumb-text">Detalle</span>
+        </nav>
 
-    <div id="ticket-content" style="display: none;">
-      <!-- Cabecera -->
-      <div class="ticket-detail-header flex flex-col gap-sm">
-        <div class="flex justify-between items-center">
-          <h2 id="ticket-titulo" style="margin: 0;"></h2>
-          <div class="flex gap-sm">
-            <span id="ticket-estado"></span>
-            <span id="ticket-prioridad"></span>
-          </div>
-        </div>
-        <div class="ticket-meta">
-          <span>ID: #<span id="ticket-id"></span></span>
-          <span>Categoría: <span id="ticket-categoria"></span></span>
-          <span>Creado el <span id="ticket-fecha"></span></span>
-          <span>Creador: <strong id="ticket-creador"></strong></span>
-        </div>
-        <div class="ticket-meta" style="margin-top: 0.5rem;">
-          <span>Responsables: <span id="asignados-list">Sin asignar</span></span>
-        </div>
-      </div>
-
-      <!-- Motivo de rechazo (solo lectura) -->
-      <div id="seccion-rechazo" style="display: none; background: #fef2f2; border: 1px solid #fecaca; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-        <h4 style="color: #dc2626; margin: 0 0 0.5rem;">Ticket Rechazado</h4>
-        <p id="motivo-rechazo-texto" style="color: #374151; white-space: pre-wrap;"></p>
-      </div>
-
-      <!-- Botón cancelar para cliente -->
-      <div id="seccion-cancelar" style="display: none; margin-bottom: 2rem;">
-        <button id="btn-cancelar-ticket" class="btn" style="background: #dc2626; color: white;">Cancelar Ticket</button>
-      </div>
-
-      <!-- Descripción -->
-      <div style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <p id="ticket-descripcion" style="white-space: pre-wrap; color: #374151;"></p>
-      </div>
-
-      <!-- Código (opcional) -->
-      <div id="seccion-codigo" class="code-section" style="display: none;">
-        <div class="code-header">
-          <span style="font-weight: 600; font-size: 0.875rem;">Fragmento de Código Adjunto</span>
-          <span id="ticket-lenguaje" style="background: #e5e7eb; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase;"></span>
-        </div>
-        <pre><code id="codigo-bloque"></code></pre>
-      </div>
-
-      <!-- Gestión del ticket (estado + asignados + resolución + rechazo) -->
-      <div class="gestion-estado-container" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h3>Gestión del Ticket</h3>
-
-        <!-- Estado -->
-        <div class="mt-sm">
-          <label style="font-weight: 600; font-size: 0.875rem;">Estado</label>
-          <div class="flex gap-md mt-sm items-center">
-            <select id="cambiar-estado" class="form-control" style="max-width: 200px;"></select>
-            <span id="estado-tooltip" style="display: none; font-size: 0.8rem; color: #f59e0b; max-width: 300px;"></span>
-          </div>
+        <!-- Loading skeleton -->
+        <div id="loading" class="skeleton-detail">
+          <div class="skeleton-header"></div>
+          <div class="skeleton-title"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-meta"></div>
         </div>
 
-        <!-- Clasificación: categoría y prioridad (senior) -->
-        <div id="seccion-clasificacion" class="mt-md" style="display: none;">
-          <div class="flex gap-md">
-            <div class="form-group" style="flex: 1; margin-bottom: 0;">
-              <label for="editar-categoria" style="font-weight: 600; font-size: 0.875rem;">Categoría</label>
-              <select id="editar-categoria" class="form-control">
-                <option value="">Selecciona...</option>
-              </select>
+        <!-- Error -->
+        <div id="error" class="form-error" hidden></div>
+
+        <!-- ═══ Main content — 2 column layout ═══ -->
+        <div id="ticket-content" hidden>
+
+          <!-- Ticket header (full width) -->
+          <div class="ticket-header animate-in">
+            <div class="ticket-header-top">
+              <h2 id="ticket-titulo" class="ticket-title"></h2>
+              <div class="ticket-badges">
+                <span id="ticket-estado"></span>
+                <span id="ticket-prioridad"></span>
+              </div>
             </div>
-            <div class="form-group" style="flex: 1; margin-bottom: 0;">
-              <label for="editar-prioridad" style="font-weight: 600; font-size: 0.875rem;">Prioridad</label>
-              <select id="editar-prioridad" class="form-control">
-                <option value="">Selecciona...</option>
-              </select>
+            <div class="ticket-meta">
+              <span>ID: #<span id="ticket-id"></span></span>
+              <span>Categoría: <span id="ticket-categoria"></span></span>
+              <span>Creado el <span id="ticket-fecha"></span></span>
+              <span>Creador: <strong id="ticket-creador"></strong></span>
+              <span>Responsables: <span id="asignados-list">Sin asignar</span></span>
             </div>
           </div>
-        </div>
 
-        <!-- Motivo rechazo input -->
-        <div id="seccion-motivo-input" class="mt-md" style="display: none;">
-          <label style="font-weight: 600; font-size: 0.875rem;">Motivo de Rechazo</label>
-          <textarea id="motivo-rechazo-input" class="form-control mt-sm" placeholder="Explica por qué se rechaza este ticket..." required></textarea>
-        </div>
-
-        <!-- Resolución -->
-        <div id="seccion-resolucion" class="mt-md" style="display: none;">
-          <label style="font-weight: 600; font-size: 0.875rem;">Notas de Resolución (opcional)</label>
-          <textarea id="resolucion-texto" class="form-control mt-sm" placeholder="Describe cómo se resolvió este ticket..."></textarea>
-        </div>
-
-        <button id="btn-guardar-gestion" class="btn btn-primary mt-md">Guardar</button>
-      </div>
-
-      <!-- Responsables (formulario separado, solo seniors) -->
-      <div id="seccion-responsables-container" class="gestion-estado-container" style="display: none; background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h3>Responsables</h3>
-        <div id="seccion-asignacion" class="mt-sm">
-          <div id="asignacion-checkboxes" style="max-height: 200px; overflow-y: auto;"></div>
-        </div>
-        <button id="btn-guardar-responsables" class="btn btn-primary mt-md">Guardar Responsables</button>
-      </div>
-
-      <!-- Historiales lado a lado -->
-      <div class="historial-container">
-        <div style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-          <h3>Historial de Estados</h3>
-          <div id="historial-estados" class="mt-sm"></div>
-        </div>
-        <div id="historial-asignaciones-container" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-          <h3>Historial de Asignaciones</h3>
-          <div id="historial-asignaciones" class="mt-sm"></div>
-        </div>
-      </div>
-
-      <!-- Observaciones Técnicas -->
-      <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h3>Observaciones Técnicas</h3>
-        
-        <div id="observaciones-list" class="observaciones-list mt-md"></div>
-        <p id="no-observaciones" style="color: #6b7280; font-size: 0.875rem; margin-top: 1rem;">No hay observaciones técnicas todavía.</p>
-
-        <form id="form-observacion" class="mt-md" style="border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
-          <div class="form-group">
-            <label for="nueva-obs">Agregar Observación</label>
-            <textarea id="nueva-obs" class="form-control" placeholder="Sugiere mejoras en el código, posibles bugs, etc..." required></textarea>
+          <!-- Rejection alert (full width) -->
+          <div id="seccion-rechazo" class="alert-section alert-section--danger section-collapsible" hidden>
+            <h4 class="alert-title">Ticket Rechazado</h4>
+            <p id="motivo-rechazo-texto" class="alert-body"></p>
           </div>
-          <button type="submit" class="btn btn-primary">Enviar Observación</button>
-        </form>
+
+          <!-- Cancel button (full width) -->
+          <div id="seccion-cancelar" class="section-collapsible" hidden>
+            <button id="btn-cancelar-ticket" class="btn btn-danger">Cancelar Ticket</button>
+          </div>
+
+          <!-- ═══ 2-Column Grid ═══ -->
+          <div class="detail-grid">
+
+            <!-- ─── LEFT: Content ─── -->
+            <div class="detail-main">
+              <!-- Description -->
+              <div class="card animate-in stagger-1">
+                <h3 class="card-section-title">Descripción</h3>
+                <p id="ticket-descripcion" class="text-prewrap"></p>
+              </div>
+
+              <!-- Code section -->
+              <div id="seccion-codigo" class="code-section section-collapsible animate-in stagger-2" hidden>
+                <div class="code-header">
+                  <span class="code-label">Fragmento de Código Adjunto</span>
+                  <span id="ticket-lenguaje" class="code-lang"></span>
+                </div>
+                <pre><code id="codigo-bloque"></code></pre>
+              </div>
+
+              <!-- Observations -->
+              <div id="seccion-observaciones" class="card animate-in stagger-3">
+                <h3 class="card-section-title">Observaciones Técnicas</h3>
+                <div id="observaciones-list" class="observations-list"></div>
+                <p id="no-observaciones" class="text-muted mt-md">No hay observaciones técnicas todavía.</p>
+                <form id="form-observacion" class="obs-form">
+                  <hr class="divider">
+                  <div class="form-group">
+                    <label for="nueva-obs">Agregar Observación</label>
+                    <textarea id="nueva-obs" class="form-control" placeholder="Sugiere mejoras en el código, posibles bugs, etc..." required></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Enviar Observación</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- ─── RIGHT: Sidebar ─── -->
+            <div class="detail-sidebar">
+              <!-- Management panel -->
+              <div class="sidebar-panel gestion-estado-container animate-in stagger-1">
+                <h3 class="sidebar-panel-title">Gestión</h3>
+
+                <!-- Estado -->
+                <div class="sidebar-field">
+                  <label for="cambiar-estado" class="sidebar-label">Estado</label>
+                  <select id="cambiar-estado" class="form-control"></select>
+                  <span id="estado-tooltip" class="estado-tooltip" hidden></span>
+                </div>
+
+                <!-- Classification -->
+                <div id="seccion-clasificacion" class="section-collapsible" hidden>
+                  <div class="sidebar-field">
+                    <label for="editar-categoria" class="sidebar-label">Categoría</label>
+                    <select id="editar-categoria" class="form-control">
+                      <option value="">Selecciona...</option>
+                    </select>
+                  </div>
+                  <div class="sidebar-field">
+                    <label for="editar-prioridad" class="sidebar-label">Prioridad</label>
+                    <select id="editar-prioridad" class="form-control">
+                      <option value="">Selecciona...</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Rejection reason input -->
+                <div id="seccion-motivo-input" class="section-collapsible" hidden>
+                  <div class="sidebar-field">
+                    <label for="motivo-rechazo-input" class="sidebar-label">Motivo de Rechazo</label>
+                    <textarea id="motivo-rechazo-input" class="form-control" placeholder="Explica por qué se rechaza..." required></textarea>
+                  </div>
+                </div>
+
+                <!-- Resolution -->
+                <div id="seccion-resolucion" class="section-collapsible" hidden>
+                  <div class="sidebar-field">
+                    <label for="resolucion-texto" class="sidebar-label">Notas de Resolución</label>
+                    <textarea id="resolucion-texto" class="form-control" placeholder="Describe cómo se resolvió..."></textarea>
+                  </div>
+                </div>
+
+                <button id="btn-guardar-gestion" class="btn btn-primary btn-sidebar-full">Guardar</button>
+              </div>
+
+              <!-- Responsables panel -->
+              <div id="seccion-responsables-container" class="sidebar-panel section-collapsible animate-in stagger-2" hidden>
+                <h3 class="sidebar-panel-title">Responsables</h3>
+                <div id="seccion-asignacion">
+                  <div id="asignacion-checkboxes" class="assignees-list"></div>
+                </div>
+                <button id="btn-guardar-responsables" class="btn btn-primary btn-sidebar-full mt-md">Guardar Responsables</button>
+              </div>
+
+              <!-- History: Estados -->
+              <div class="sidebar-panel animate-in stagger-3">
+                <h3 class="sidebar-panel-title">Historial de Estados</h3>
+                <div id="historial-estados"></div>
+              </div>
+
+              <!-- History: Asignaciones -->
+              <div id="historial-asignaciones-container" class="sidebar-panel animate-in stagger-4">
+                <h3 class="sidebar-panel-title">Historial de Asignaciones</h3>
+                <div id="historial-asignaciones"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>

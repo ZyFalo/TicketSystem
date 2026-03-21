@@ -1,4 +1,5 @@
-import { apiGet, apiPatch, apiPost, apiDelete } from './api.js';
+import { apiGet, apiPatch, apiPost, apiDelete, apiPut } from './api.js';
+import { showToast } from './toast.js';
 
 const pathParts = window.location.pathname.split('/');
 const ticketId = pathParts[pathParts.length - 1];
@@ -44,26 +45,27 @@ const secClasificacion = document.getElementById('seccion-clasificacion');
 const editarCategoria = document.getElementById('editar-categoria');
 const editarPrioridad = document.getElementById('editar-prioridad');
 
-const PRIORIDAD_COLORS = { 'Alta': '#ef4444', 'Media': '#f59e0b', 'Baja': '#10b981' };
+function normalizeBadge(name) {
+  return name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ /g, '-');
+}
 
 function getBadgeEstado(est) {
   if (!est) return '';
-  return `<span class="badge" style="background-color: ${est.color}">${est.nombre}</span>`;
+  return `<span class="badge badge--${normalizeBadge(est.nombre)}">${est.nombre}</span>`;
 }
 
 function getBadgePrioridad(pri) {
   if (!pri) return '';
-  const color = PRIORIDAD_COLORS[pri.nombre] || '#6b7280';
-  return `<span class="badge" style="background-color: ${color}">${pri.nombre}</span>`;
+  return `<span class="badge badge--${normalizeBadge(pri.nombre)}">${pri.nombre}</span>`;
 }
 
 function renderObservaciones(observaciones) {
   if (!observaciones || observaciones.length === 0) {
-    noObs.style.display = 'block';
+    noObs.hidden = false;
     obsList.innerHTML = '';
     return;
   }
-  noObs.style.display = 'none';
+  noObs.hidden = true;
   obsList.innerHTML = observaciones.map(obs => `
     <div class="observacion-card">
       <div class="obs-meta">
@@ -87,9 +89,9 @@ function waitForRole() {
 
 async function loadTicket() {
   if (!ticketId) {
-    errorDiv.style.display = 'block';
-    errorDiv.textContent = 'No se especificó un ID de ticket.';
-    loading.style.display = 'none';
+    errorDiv.hidden = false;
+    errorDiv.textContent = 'No se especifico un ID de ticket.';
+    loading.hidden = true;
     return;
   }
 
@@ -101,7 +103,11 @@ async function loadTicket() {
     const ticket = await apiGet(`/tickets/${ticketId}`);
     const estadoNombre = ticket.estado ? ticket.estado.nombre : 'Pendiente';
 
-    // Info básica
+    // Breadcrumb
+    const breadcrumbTxt = document.getElementById('breadcrumb-text');
+    if (breadcrumbTxt) breadcrumbTxt.textContent = `Ticket #${ticket.id}`;
+
+    // Info basica
     titulo.textContent = ticket.titulo;
     estado.innerHTML = getBadgeEstado(ticket.estado);
     prioridad.innerHTML = getBadgePrioridad(ticket.prioridad);
@@ -119,34 +125,34 @@ async function loadTicket() {
 
     // Motivo de rechazo
     if (estadoNombre === 'Rechazado' && secRechazo) {
-      secRechazo.style.display = '';
+      secRechazo.classList.add('is-visible');
       if (motivoRechazoTexto) motivoRechazoTexto.textContent = ticket.motivo_rechazo || '';
     }
 
-    // Botón cancelar
+    // Boton cancelar
     if (userRole === 'cliente' && estadoNombre === 'Pendiente' && ticket.creado_por === userId && secCancelar) {
-      secCancelar.style.display = '';
+      secCancelar.classList.add('is-visible');
     }
 
-    // Código
+    // Codigo
     if (ticket.fragmento_codigo) {
-      secCodigo.style.display = 'block';
+      secCodigo.classList.add('is-visible');
       lenguaje.textContent = ticket.lenguaje_codigo || 'texto';
       bloqueCodigo.className = `language-${ticket.lenguaje_codigo || 'plaintext'}`;
       bloqueCodigo.textContent = ticket.fragmento_codigo;
       if (window.hljs) window.hljs.highlightElement(bloqueCodigo);
     }
 
-    // Resolución (lectura)
+    // Resolucion (lectura)
     if ((estadoNombre === 'Resuelto' || estadoNombre === 'Cerrado') && ticket.resolucion) {
       if (userRole === 'cliente') {
         const resDiv = document.createElement('div');
-        resDiv.style.cssText = 'background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;';
-        resDiv.innerHTML = `<h4 style="color: #16a34a; margin: 0 0 0.5rem;">Resolución</h4><p style="color: #374151; white-space: pre-wrap;">${ticket.resolucion}</p>`;
+        resDiv.className = 'alert-section alert-section--success';
+        resDiv.innerHTML = `<h4 class="alert-title">Resolución</h4><p class="alert-body">${ticket.resolucion}</p>`;
         const descContainer = descripcion.parentElement;
         descContainer.parentElement.insertBefore(resDiv, descContainer.nextSibling);
       } else {
-        secResolucion.style.display = 'block';
+        secResolucion.classList.add('is-visible');
         txtResolucion.value = ticket.resolucion;
         txtResolucion.disabled = true;
       }
@@ -160,7 +166,7 @@ async function loadTicket() {
       asignadoIds: (ticket.asignados || []).map(a => a.id).sort().join(','),
     };
 
-    // --- Controles de estado según rol ---
+    // --- Controles de estado segun rol ---
     const isAsignado = (ticket.asignados || []).some(a => a.id === userId);
     selectEstado.innerHTML = '';
 
@@ -170,28 +176,28 @@ async function loadTicket() {
     const estadoTooltip = document.getElementById('estado-tooltip');
 
     if (userRole === 'cliente') {
-      if (gestionEstado) gestionEstado.style.display = 'none';
-      if (responsablesContainer) responsablesContainer.style.display = 'none';
+      if (gestionEstado) gestionEstado.setAttribute('hidden', '');
+      if (responsablesContainer) responsablesContainer.setAttribute('hidden', '');
     } else if (userRole === 'senior') {
       // Estado select
       if (estadoNombre === 'Pendiente') {
         const tieneAsignados = (ticket.asignados || []).length > 0;
         if (tieneAsignados) {
           selectEstado.innerHTML = '<option value="Pendiente">Pendiente</option><option value="Abierto">Abierto</option><option value="Rechazado">Rechazado</option>';
-          if (estadoTooltip) estadoTooltip.style.display = 'none';
+          if (estadoTooltip) estadoTooltip.setAttribute('hidden', '');
         } else {
           selectEstado.innerHTML = '<option value="Pendiente">Pendiente</option><option value="Rechazado">Rechazado</option>';
           if (estadoTooltip) {
             estadoTooltip.textContent = 'Asigna al menos un responsable para poder pasar a Abierto';
-            estadoTooltip.style.display = '';
+            estadoTooltip.removeAttribute('hidden');
           }
         }
       } else if (estadoNombre === 'Abierto') {
-        selectEstado.innerHTML = '<option value="Abierto">Abierto</option><option value="En revisión">En revisión</option>';
-      } else if (estadoNombre === 'En revisión') {
-        selectEstado.innerHTML = '<option value="En revisión">En revisión</option><option value="En proceso">En proceso</option>';
+        selectEstado.innerHTML = '<option value="Abierto">Abierto</option><option value="En revision">En revision</option>';
+      } else if (estadoNombre === 'En revision') {
+        selectEstado.innerHTML = '<option value="En revision">En revision</option><option value="En proceso">En proceso</option>';
       } else if (estadoNombre === 'En proceso') {
-        selectEstado.innerHTML = '<option value="En proceso">En proceso</option><option value="Resuelto">Resuelto</option><option value="En revisión">En revisión</option>';
+        selectEstado.innerHTML = '<option value="En proceso">En proceso</option><option value="Resuelto">Resuelto</option><option value="En revision">En revision</option>';
       } else if (estadoNombre === 'Resuelto') {
         selectEstado.innerHTML = '<option value="Resuelto">Resuelto</option><option value="Cerrado">Cerrado</option><option value="En proceso">En proceso</option>';
       } else {
@@ -199,26 +205,26 @@ async function loadTicket() {
         selectEstado.disabled = true;
       }
 
-      // Clasificación y responsables: ocultar si Cerrado o Rechazado
+      // Clasificacion y responsables: ocultar si Cerrado o Rechazado
       const esTerminal = estadoNombre === 'Cerrado' || estadoNombre === 'Rechazado';
 
       if (secClasificacion && !esTerminal) {
-        secClasificacion.style.display = '';
+        secClasificacion.classList.add('is-visible');
         await loadOpcionesClasificacion(ticket);
       }
 
       if (responsablesContainer && !esTerminal) {
-        responsablesContainer.style.display = '';
+        responsablesContainer.classList.add('is-visible');
         await loadAsignacionUI(ticket.asignados || []);
       }
     } else if (userRole === 'developer' && isAsignado) {
-      if (responsablesContainer) responsablesContainer.style.display = 'none';
+      if (responsablesContainer) responsablesContainer.setAttribute('hidden', '');
       if (estadoNombre === 'Abierto') {
-        selectEstado.innerHTML = '<option value="Abierto">Abierto</option><option value="En revisión">En revisión</option>';
-      } else if (estadoNombre === 'En revisión') {
-        selectEstado.innerHTML = '<option value="En revisión">En revisión</option><option value="En proceso">En proceso</option>';
+        selectEstado.innerHTML = '<option value="Abierto">Abierto</option><option value="En revision">En revision</option>';
+      } else if (estadoNombre === 'En revision') {
+        selectEstado.innerHTML = '<option value="En revision">En revision</option><option value="En proceso">En proceso</option>';
       } else if (estadoNombre === 'En proceso') {
-        selectEstado.innerHTML = '<option value="En proceso">En proceso</option><option value="Resuelto">Resuelto</option><option value="En revisión">En revisión</option>';
+        selectEstado.innerHTML = '<option value="En proceso">En proceso</option><option value="Resuelto">Resuelto</option><option value="En revision">En revision</option>';
       } else {
         selectEstado.innerHTML = `<option value="${estadoNombre}">${estadoNombre}</option>`;
         selectEstado.disabled = true;
@@ -226,12 +232,12 @@ async function loadTicket() {
     } else {
       selectEstado.innerHTML = `<option value="${estadoNombre}">${estadoNombre}</option>`;
       selectEstado.disabled = true;
-      if (responsablesContainer) responsablesContainer.style.display = 'none';
+      if (responsablesContainer) responsablesContainer.setAttribute('hidden', '');
     }
 
-    // Ocultar form observación si cerrado/rechazado
+    // Ocultar form observacion si cerrado/rechazado
     if (estadoNombre === 'Cerrado' || estadoNombre === 'Rechazado') {
-      formObs.style.display = 'none';
+      formObs.setAttribute('hidden', '');
     }
 
     // Historial de estados (todos los roles)
@@ -243,7 +249,7 @@ async function loadTicket() {
     if (historialEl && userRole !== 'cliente') {
       await loadHistorial();
     } else if (historialAsignacionesContainer) {
-      historialAsignacionesContainer.style.display = 'none';
+      historialAsignacionesContainer.setAttribute('hidden', '');
     }
 
     // Observaciones (solo senior y developer)
@@ -255,16 +261,16 @@ async function loadTicket() {
         renderObservaciones([]);
       }
     } else {
-      obsList.parentElement.style.display = 'none';
+      obsList.parentElement.setAttribute('hidden', '');
     }
 
-    loading.style.display = 'none';
-    content.style.display = 'block';
+    loading.hidden = true;
+    content.hidden = false;
   } catch (err) {
     console.error(err);
-    errorDiv.style.display = 'block';
+    errorDiv.hidden = false;
     errorDiv.textContent = 'Error al cargar el ticket: ' + (err.data?.detail || JSON.stringify(err));
-    loading.style.display = 'none';
+    loading.hidden = true;
   }
 }
 
@@ -292,13 +298,13 @@ async function loadAsignacionUI(currentAsignados) {
     const usuarios = todosUsuarios.filter(u => u.rol !== 'cliente');
     const asignadoIds = currentAsignados.map(a => a.id);
     container.innerHTML = usuarios.map(u => `
-      <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0;">
+      <label class="checkbox-label">
         <input type="checkbox" class="asignado-check" value="${u.id}" ${asignadoIds.includes(u.id) ? 'checked' : ''}>
-        ${u.nombre} <span style="color: #6b7280; font-size: 0.75rem;">(${u.rol})</span>
+        ${u.nombre} <span class="role-hint">(${u.rol})</span>
       </label>
     `).join('');
   } catch (_) {
-    container.innerHTML = '<p style="color: #6b7280;">Error al cargar usuarios</p>';
+    container.innerHTML = '<p class="text-muted">Error al cargar usuarios</p>';
   }
 }
 
@@ -307,15 +313,15 @@ async function loadHistorialEstados(userRole) {
   try {
     const historial = await apiGet(`/tickets/${ticketId}/historial-estados`);
     if (historial.length === 0) {
-      historialEstadosEl.innerHTML = '<p style="color: #6b7280; font-size: 0.875rem;">Sin historial.</p>';
+      historialEstadosEl.innerHTML = '<p class="text-muted">Sin historial.</p>';
       return;
     }
     historialEstadosEl.innerHTML = historial.map(h => {
-      const badge = `<span class="badge" style="background-color: ${h.estado.color}; font-size: 0.7rem;">${h.estado.nombre}</span>`;
+      const badge = `<span class="badge badge--${normalizeBadge(h.estado.nombre)}">${h.estado.nombre}</span>`;
       const ejecutor = (userRole !== 'cliente' && h.cambiado_por_nombre) ? ` — ${h.cambiado_por_nombre}` : '';
       return `
-        <div style="display: flex; gap: 0.75rem; padding: 0.25rem 0; font-size: 0.875rem; align-items: center;">
-          <span style="color: #6b7280; min-width: 80px;">${new Date(h.created_at).toLocaleDateString()}</span>
+        <div class="history-entry">
+          <span class="history-date">${new Date(h.created_at).toLocaleDateString()}</span>
           ${badge}${ejecutor}
         </div>`;
     }).join('');
@@ -329,12 +335,12 @@ async function loadHistorial() {
   try {
     const historial = await apiGet(`/tickets/${ticketId}/historial-asignaciones`);
     if (historial.length === 0) {
-      historialEl.innerHTML = '<p style="color: #6b7280; font-size: 0.875rem;">Sin historial.</p>';
+      historialEl.innerHTML = '<p class="text-muted">Sin historial.</p>';
       return;
     }
     historialEl.innerHTML = historial.map(h => `
-      <div style="display: flex; gap: 1rem; padding: 0.25rem 0; font-size: 0.875rem;">
-        <span style="color: #6b7280; min-width: 80px;">${new Date(h.created_at).toLocaleDateString()}</span>
+      <div class="history-entry">
+        <span class="history-date">${new Date(h.created_at).toLocaleDateString()}</span>
         <span>${h.usuario_nombres.join(', ') || 'Sin asignar'}</span>
       </div>
     `).join('');
@@ -347,19 +353,19 @@ async function loadHistorial() {
 
 selectEstado.addEventListener('change', (e) => {
   if (e.target.value === 'Resuelto') {
-    secResolucion.style.display = '';
+    secResolucion.classList.add('is-visible');
     txtResolucion.disabled = false;
   } else {
-    secResolucion.style.display = 'none';
+    secResolucion.classList.remove('is-visible');
   }
   if (e.target.value === 'Rechazado') {
-    if (secMotivoInput) secMotivoInput.style.display = '';
+    if (secMotivoInput) secMotivoInput.classList.add('is-visible');
   } else {
-    if (secMotivoInput) secMotivoInput.style.display = 'none';
+    if (secMotivoInput) secMotivoInput.classList.remove('is-visible');
   }
 });
 
-// Botón "Guardar" — gestión del ticket
+// Boton "Guardar" — gestion del ticket
 const btnGuardar = document.getElementById('btn-guardar-gestion');
 if (btnGuardar) {
   btnGuardar.addEventListener('click', async () => {
@@ -370,7 +376,7 @@ if (btnGuardar) {
     try {
       let cambios = false;
 
-      // 1. Clasificación (solo si cambió)
+      // 1. Clasificacion (solo si cambio)
       if (editarCategoria && editarCategoria.offsetParent !== null) {
         const catId = editarCategoria.value ? parseInt(editarCategoria.value) : null;
         const priId = editarPrioridad.value ? parseInt(editarPrioridad.value) : null;
@@ -395,7 +401,7 @@ if (btnGuardar) {
       if (nuevoEstado === 'Rechazado') {
         const motivo = motivoRechazoInput ? motivoRechazoInput.value.trim() : '';
         if (!motivo) {
-          alert('El motivo de rechazo es obligatorio.');
+          showToast('El motivo de rechazo es obligatorio', 'warning');
           btnGuardar.textContent = 'Guardar';
           btnGuardar.disabled = false;
           return;
@@ -409,13 +415,13 @@ if (btnGuardar) {
       }
 
       if (cambios) {
-        alert('Cambios guardados');
+        showToast('Cambios guardados', 'success');
       } else {
-        alert('Sin cambios que guardar');
+        showToast('Sin cambios', 'info');
       }
       loadTicket();
     } catch (err) {
-      alert(err.data?.detail || 'Error al guardar');
+      showToast(err.data?.detail || 'Error al guardar', 'error');
     } finally {
       btnGuardar.textContent = 'Guardar';
       btnGuardar.disabled = false;
@@ -423,7 +429,7 @@ if (btnGuardar) {
   });
 }
 
-// Botón "Guardar Responsables"
+// Boton "Guardar Responsables"
 const btnGuardarResp = document.getElementById('btn-guardar-responsables');
 if (btnGuardarResp) {
   btnGuardarResp.addEventListener('click', async () => {
@@ -437,27 +443,19 @@ if (btnGuardarResp) {
       const nuevosIds = asignadoIds.join(',');
 
       if (nuevosIds === orig.asignadoIds) {
-        alert('Sin cambios en responsables');
+        showToast('Sin cambios en responsables', 'info');
         loadTicket();
         return;
       }
 
-      const resp = await fetch(`/api/tickets/${ticketId}/asignados`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario_ids: asignadoIds }),
-      });
-      if (!resp.ok) {
-        const err = await resp.json();
-        throw { data: err };
-      }
+      await apiPut(`/tickets/${ticketId}/asignados`, { usuario_ids: asignadoIds });
 
-      // Auto-transición: Pendiente → Abierto si cat + pri + asignados
+      // Auto-transicion: Pendiente -> Abierto si cat + pri + asignados
       if (orig.estado === 'Pendiente' && asignadoIds.length > 0) {
         const catId = editarCategoria ? editarCategoria.value : null;
         const priId = editarPrioridad ? editarPrioridad.value : null;
         if (catId && priId) {
-          // Guardar clasificación si cambió
+          // Guardar clasificacion si cambio
           const updateBody = {};
           const catInt = parseInt(catId);
           const priInt = parseInt(priId);
@@ -470,10 +468,10 @@ if (btnGuardarResp) {
         }
       }
 
-      alert('Responsables actualizados');
+      showToast('Responsables actualizados', 'success');
       loadTicket();
     } catch (err) {
-      alert(err.data?.detail || 'Error al guardar responsables');
+      showToast(err.data?.detail || 'Error al guardar responsables', 'error');
     } finally {
       btnGuardarResp.textContent = 'Guardar Responsables';
       btnGuardarResp.disabled = false;
@@ -484,18 +482,18 @@ if (btnGuardarResp) {
 // Cancelar ticket
 if (btnCancelar) {
   btnCancelar.addEventListener('click', async () => {
-    if (!confirm('¿Estás seguro de cancelar este ticket?')) return;
+    if (!confirm('Estas seguro de cancelar este ticket?')) return;
     try {
       await apiDelete(`/tickets/${ticketId}`);
-      alert('Ticket cancelado');
+      showToast('Ticket cancelado', 'success');
       window.location.href = '/tickets';
     } catch (err) {
-      alert(err.data?.detail || 'Error al cancelar');
+      showToast(err.data?.detail || 'Error al cancelar', 'error');
     }
   });
 }
 
-// Observación
+// Observacion
 formObs.addEventListener('submit', async (e) => {
   e.preventDefault();
   const txt = document.getElementById('nueva-obs').value.trim();
@@ -505,7 +503,7 @@ formObs.addEventListener('submit', async (e) => {
     document.getElementById('nueva-obs').value = '';
     loadTicket();
   } catch (err) {
-    alert(err.data?.detail || 'Error al agregar observación');
+    showToast(err.data?.detail || 'Error al agregar observacion', 'error');
   }
 });
 

@@ -1,11 +1,22 @@
-import { apiGet, apiPost } from './api.js';
+import { apiGet, apiPost, apiPut } from './api.js';
+import { showToast } from './toast.js';
 
 const form = document.getElementById('crear-ticket-form');
 const btnSubmit = document.getElementById('btn-submit');
-const errorDiv = document.getElementById('crear-error');
 const camposClasificacion = document.getElementById('campos-clasificacion');
-const seccionAsignados = document.getElementById('seccion-asignados');
 const asignadosContainer = document.getElementById('asignados-checkboxes');
+
+// Toggle code section
+const toggleCodeBtn = document.getElementById('toggle-code');
+const codeBody = document.getElementById('code-body');
+const toggleCodeText = document.getElementById('toggle-code-text');
+if (toggleCodeBtn && codeBody) {
+  toggleCodeBtn.addEventListener('click', () => {
+    const isOpen = codeBody.classList.toggle('is-visible');
+    toggleCodeBtn.classList.toggle('is-open', isOpen);
+    toggleCodeText.textContent = isOpen ? 'Contraer' : 'Expandir';
+  });
+}
 
 function waitForRole() {
   return new Promise(resolve => {
@@ -22,8 +33,10 @@ async function init() {
   const rol = window.__userRole;
 
   if (rol === 'senior') {
-    if (camposClasificacion) camposClasificacion.style.display = '';
-    if (seccionAsignados) seccionAsignados.style.display = '';
+    if (camposClasificacion) camposClasificacion.hidden = false;
+    // Update code section number from 2 to 3
+    const codeNum = document.getElementById('code-section-number');
+    if (codeNum) codeNum.textContent = '3';
     await loadOpciones();
     await loadUsuariosParaAsignar();
   }
@@ -49,13 +62,13 @@ async function loadUsuariosParaAsignar() {
     const todosUsuarios = await apiGet('/usuarios');
     const usuarios = todosUsuarios.filter(u => u.rol !== 'cliente');
     asignadosContainer.innerHTML = usuarios.map(u => `
-      <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0;">
+      <label class="checkbox-label">
         <input type="checkbox" class="asignado-crear-check" value="${u.id}">
-        ${u.nombre} <span style="color: #6b7280; font-size: 0.75rem;">(${u.rol})</span>
+        ${u.nombre} <span class="role-hint">(${u.rol})</span>
       </label>
     `).join('');
   } catch (_) {
-    asignadosContainer.innerHTML = '<p style="color: #6b7280;">Error al cargar usuarios</p>';
+    asignadosContainer.innerHTML = '<p class="text-muted">Error al cargar usuarios</p>';
   }
 }
 
@@ -68,13 +81,12 @@ form.addEventListener('submit', async (e) => {
   const codigo = document.getElementById('codigo').value.trim();
 
   if (!titulo || !descripcion) {
-    errorDiv.textContent = 'Por favor, completa título y descripción.';
+    showToast('Por favor, completa título y descripción.', 'error');
     return;
   }
 
   btnSubmit.disabled = true;
   btnSubmit.textContent = 'Creando...';
-  errorDiv.textContent = '';
 
   const payload = {
     titulo,
@@ -97,11 +109,7 @@ form.addEventListener('submit', async (e) => {
       const checks = document.querySelectorAll('.asignado-crear-check:checked');
       if (checks.length > 0 && data && data.id) {
         const usuario_ids = Array.from(checks).map(c => parseInt(c.value));
-        await fetch(`/api/tickets/${data.id}/asignados`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usuario_ids }),
-        });
+        await apiPut('/tickets/' + data.id + '/asignados', { usuario_ids });
       }
     }
 
@@ -112,7 +120,7 @@ form.addEventListener('submit', async (e) => {
     }
   } catch (err) {
     console.error(err);
-    errorDiv.textContent = err.data?.detail || 'Error al crear el ticket.';
+    showToast(err.data?.detail || 'Error al crear el ticket.', 'error');
     btnSubmit.disabled = false;
     btnSubmit.textContent = 'Crear Ticket';
   }

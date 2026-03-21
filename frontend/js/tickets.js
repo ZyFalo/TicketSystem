@@ -1,4 +1,5 @@
 import { apiGet } from './api.js';
+import { showToast } from './toast.js';
 
 const ticketsBody = document.getElementById('tickets-body');
 const filtrosForm = document.getElementById('filtros-form');
@@ -9,32 +10,42 @@ const filtroMisTickets = document.getElementById('filtro-mis-tickets');
 const btnLimpiar = document.getElementById('btn-limpiar');
 const errorDiv = document.getElementById('tickets-error');
 
-// Cache de colores de prioridad
-const PRIORIDAD_COLORS = { 'Alta': '#ef4444', 'Media': '#f59e0b', 'Baja': '#10b981' };
+function normalizeBadge(name) {
+  return name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ /g, '-');
+}
 
 function getBadgeEstado(estado) {
   if (!estado) return '';
-  return `<span class="badge" style="background-color: ${estado.color}">${estado.nombre}</span>`;
+  return `<span class="badge badge--${normalizeBadge(estado.nombre)}">${estado.nombre}</span>`;
 }
 
 function getBadgePrioridad(prioridad) {
   if (!prioridad) return '—';
-  const color = PRIORIDAD_COLORS[prioridad.nombre] || '#6b7280';
-  return `<span class="badge" style="background-color: ${color}">${prioridad.nombre}</span>`;
+  return `<span class="badge badge--${normalizeBadge(prioridad.nombre)}">${prioridad.nombre}</span>`;
 }
 
 function renderTickets(tickets) {
   if (!tickets || tickets.length === 0) {
-    ticketsBody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #6b7280; padding: 2rem;">No se encontraron tickets.</td></tr>`;
+    ticketsBody.innerHTML = `<tr><td colspan="9">
+      <div class="empty-state">
+        <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          <line x1="9" y1="12" x2="15" y2="12"/>
+          <line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+        <p class="empty-state__text">No se encontraron tickets.</p>
+      </div>
+    </td></tr>`;
     return;
   }
 
+  ticketsBody.classList.add('animate-rows');
   ticketsBody.innerHTML = tickets.map(ticket => {
     const asignadosStr = (ticket.asignados || []).map(a => a.nombre).join(', ') || '—';
     return `
     <tr>
       <td>${ticket.id}</td>
-      <td style="font-weight: 500;">${ticket.titulo}</td>
+      <td class="col-title">${ticket.titulo}</td>
       <td>${ticket.categoria ? ticket.categoria.nombre : '—'}</td>
       <td>${getBadgeEstado(ticket.estado)}</td>
       <td>${getBadgePrioridad(ticket.prioridad)}</td>
@@ -42,7 +53,7 @@ function renderTickets(tickets) {
       <td>${asignadosStr}</td>
       <td>${new Date(ticket.created_at || Date.now()).toLocaleDateString()}</td>
       <td>
-        <a href="/ticket/${ticket.id}" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.875rem; background: #e5e7eb; color: #1f2937;">Ver</a>
+        <a href="/ticket/${ticket.id}" class="btn btn-action">Ver</a>
       </td>
     </tr>`;
   }).join('');
@@ -61,7 +72,7 @@ async function loadTickets() {
     renderTickets(data);
   } catch (err) {
     console.error(err);
-    errorDiv.textContent = err.data?.detail || 'Error al cargar los tickets.';
+    showToast(err.data?.detail || 'Error al cargar los tickets.', 'error');
     ticketsBody.innerHTML = '';
   }
 }
@@ -95,11 +106,11 @@ async function loadOpciones() {
 waitForRole().then(() => {
   if (window.__userRole !== 'cliente') {
     const container = document.getElementById('filtro-mis-tickets-container');
-    if (container) container.style.display = 'flex';
+    if (container) container.hidden = false;
   }
   if (window.__userRole === 'cliente' || window.__userRole === 'senior') {
     const btnNuevo = document.getElementById('btn-nuevo-ticket');
-    if (btnNuevo) btnNuevo.style.display = '';
+    if (btnNuevo) btnNuevo.hidden = false;
   }
   loadOpciones();
 });

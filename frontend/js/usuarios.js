@@ -1,4 +1,5 @@
 import { apiGet, apiPatch } from './api.js';
+import { showToast } from './toast.js';
 
 const tbody = document.getElementById('usuarios-body');
 const errorDiv = document.getElementById('usuarios-error');
@@ -14,24 +15,22 @@ const ROL_ACTIONS = {
 
 function renderUsuarios(usuarios) {
   if (!usuarios || usuarios.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 2rem;">No hay usuarios.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><p class="empty-title">No hay usuarios.</p></div></td></tr>`;
     return;
   }
 
   tbody.innerHTML = usuarios.map(u => {
     const actions = ROL_ACTIONS[u.rol] || [];
     const buttons = actions.map(a =>
-      `<button class="btn btn-cambiar-rol" data-id="${u.id}" data-rol="${a.target}" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; margin: 0.125rem;">${a.label}</button>`
+      `<button class="btn btn-action btn-cambiar-rol" data-id="${u.id}" data-rol="${a.target}">${a.label}</button>`
     ).join(' ');
-
-    const badgeClass = u.rol === 'senior' ? 'badge-resuelto' : u.rol === 'developer' ? 'badge-en-revision' : 'badge-pendiente';
 
     return `
     <tr>
       <td>${u.id}</td>
-      <td style="font-weight: 500;">${u.nombre}</td>
+      <td class="col-title">${u.nombre}</td>
       <td>${u.email}</td>
-      <td><span class="badge ${badgeClass}">${u.rol}</span></td>
+      <td><span class="badge badge--${u.rol}">${u.rol}</span></td>
       <td>${buttons}</td>
     </tr>`;
   }).join('');
@@ -46,7 +45,7 @@ function renderUsuarios(usuarios) {
         await apiPatch(`/usuarios/${userId}/rol`, { rol: newRol });
         loadUsuarios();
       } catch (err) {
-        alert(err.data?.detail || 'Error al cambiar rol');
+        showToast(err.data?.detail || 'Error al cambiar rol', 'error');
         btn.disabled = false;
       }
     });

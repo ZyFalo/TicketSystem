@@ -1,0 +1,100 @@
+// ═══════════════════════════════════════════════════════
+// Loading Skeletons
+// ═══════════════════════════════════════════════════════
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+%skeleton-base {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 0%,
+    var(--bg-surface) 40%,
+    var(--bg-elevated) 80%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.8s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-line {
+  @extend %skeleton-base;
+  height: 14px;
+  margin-bottom: var(--sp-sm);
+  border-radius: var(--radius-sm);
+
+  &--short { width: 40%; }
+  &--medium { width: 65%; }
+  &--long { width: 90%; }
+}
+
+.skeleton-rect {
+  @extend %skeleton-base;
+  height: 80px;
+  width: 100%;
+  margin-bottom: var(--sp-md);
+}
+
+.skeleton-circle {
+  @extend %skeleton-base;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton-badge {
+  @extend %skeleton-base;
+  display: inline-block;
+  width: 70px;
+  height: 22px;
+  border-radius: var(--radius-full);
+}
+
+// Table skeleton row
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-md);
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+
+  .skeleton-cell {
+    @extend %skeleton-base;
+    height: 16px;
+    flex: 1;
+
+    &--sm { max-width: 50px; }
+    &--md { max-width: 150px; }
+    &--badge { max-width: 80px; height: 22px; border-radius: var(--radius-full); }
+  }
+}
+
+// Detail skeleton
+.skeleton-detail {
+  .skeleton-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--sp-lg);
+  }
+
+  .skeleton-title {
+    @extend %skeleton-base;
+    height: 28px;
+    width: 60%;
+  }
+
+  .skeleton-meta {
+    display: flex;
+    gap: var(--sp-lg);
+    margin-top: var(--sp-md);
+  }
+
+  .skeleton-meta-item {
+    @extend %skeleton-base;
+    height: 14px;
+    width: 100px;
+  }
+}

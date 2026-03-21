@@ -1,0 +1,65 @@
+// ═══════════════════════════════════════════════════════
+// Animated Text Cycle (Hero)
+// ═══════════════════════════════════════════════════════
+
+.text-cycle-wrapper {
+  display: inline-block;
+  position: relative;
+  vertical-align: baseline;
+  overflow: hidden;
+  transition: width 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.text-cycle-word {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+// Enter animation
+.text-cycle-enter {
+  animation: textCycleIn 0.4s ease forwards;
+}
+
+// Exit animation
+.text-cycle-exit {
+  animation: textCycleOut 0.3s ease forwards;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+@keyframes textCycleIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+@keyframes textCycleOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100%);
+    filter: blur(6px);
+  }
+}
+
+// Hidden measurement container
+.text-cycle-measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
