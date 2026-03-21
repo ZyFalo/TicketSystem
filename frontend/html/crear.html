@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Tickets - Crear Ticket</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+  <nav class="main-nav">
+    <a href="/" class="nav-brand">DevSupport</a>
+    <div class="nav-links" id="nav-links">
+      <a href="/tickets">Tickets</a>
+      <a href="/crear" style="color: #2563eb;">Nuevo Ticket</a>
+      <a href="/login" id="nav-auth-link">Login</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h2>Crear Nuevo Ticket</h2>
+    
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <form id="crear-ticket-form">
+        <div class="form-group">
+          <label for="titulo">Título del problema</label>
+          <input type="text" id="titulo" class="form-control" required placeholder="Ej. El servidor devuelve error 500 al guardar">
+        </div>
+
+        <div class="flex gap-md">
+          <div class="form-group" style="flex: 1;">
+            <label for="categoria">Categoría</label>
+            <select id="categoria" class="form-control" required>
+              <option value="">Selecciona...</option>
+              <option value="Servidor">Servidor</option>
+              <option value="Base de Datos">Base de Datos</option>
+              <option value="Frontend">Frontend</option>
+              <option value="Bug">Bug</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label for="prioridad">Prioridad</label>
+            <select id="prioridad" class="form-control" required>
+              <option value="Baja">Baja</option>
+              <option value="Media" selected>Media</option>
+              <option value="Alta">Alta</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción detallada</label>
+          <textarea id="descripcion" class="form-control" required placeholder="Describe los pasos para reproducir, lo que esperabas que pasara y lo que pasó..."></textarea>
+        </div>
+
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e5e7eb;">
+        
+        <h3>Fragmento de Código (Opcional)</h3>
+        <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1rem;">Si el problema es específico de código, pégalo aquí para revisión técnica.</p>
+
+        <div class="form-group">
+          <label for="lenguaje">Lenguaje</label>
+          <select id="lenguaje" class="form-control" style="max-width: 200px;">
+            <option value="javascript">JavaScript / Node.js</option>
+            <option value="python">Python</option>
+            <option value="java">Java</option>
+            <option value="html">HTML / CSS</option>
+            <option value="sql">SQL</option>
+            <option value="plaintext">Texto plano</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="codigo">Código</label>
+          <textarea id="codigo" class="form-control" style="font-family: monospace; min-height: 150px; background-color: #f9fafb;" placeholder="function ejemplo() { ... }"></textarea>
+        </div>
+
+        <div id="crear-error" style="color: red; font-size: 0.875rem; margin-bottom: 1rem;"></div>
+
+        <div class="flex justify-between items-center mt-md">
+          <a href="/tickets" class="btn btn-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary" id="btn-submit">Crear Ticket</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script type="module" src="/static/js/crear.js"></script>
+  <script type="module" src="/static/js/nav.js"></script>
+</body>
+</html>

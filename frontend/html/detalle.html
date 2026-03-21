@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Tickets - Detalle</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.x/styles/github-dark.min.css">
+</head>
+<body>
+  <nav class="main-nav">
+    <a href="/" class="nav-brand">DevSupport</a>
+    <div class="nav-links" id="nav-links">
+      <a href="/tickets" style="color: #2563eb;">Tickets</a>
+      <a href="/crear">Nuevo Ticket</a>
+      <a href="/login" id="nav-auth-link">Login</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div id="loading" style="text-align: center; color: #6b7280; padding: 2rem;">Cargando ticket...</div>
+    <div id="error" style="color: red; padding: 2rem; display: none;"></div>
+
+    <div id="ticket-content" style="display: none;">
+      <!-- Cabecera -->
+      <div class="ticket-detail-header flex flex-col gap-sm">
+        <div class="flex justify-between items-center">
+          <h2 id="ticket-titulo" style="margin: 0;"></h2>
+          <div class="flex gap-sm">
+            <span id="ticket-estado"></span>
+            <span id="ticket-prioridad"></span>
+          </div>
+        </div>
+        <div class="ticket-meta">
+          <span>ID: #<span id="ticket-id"></span></span>
+          <span>Categoría: <span id="ticket-categoria"></span></span>
+          <span>Creado el <span id="ticket-fecha"></span></span>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <p id="ticket-descripcion" style="white-space: pre-wrap; color: #374151;"></p>
+      </div>
+
+      <!-- Código (opcional) -->
+      <div id="seccion-codigo" class="code-section" style="display: none;">
+        <div class="code-header">
+          <span style="font-weight: 600; font-size: 0.875rem;">Fragmento de Código Adjunto</span>
+          <span id="ticket-lenguaje" style="background: #e5e7eb; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase;"></span>
+        </div>
+        <pre><code id="codigo-bloque"></code></pre>
+      </div>
+
+      <!-- Controles y Resolución -->
+      <div style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h3>Gestión de Estado</h3>
+        <div class="flex gap-md mt-sm items-center">
+          <select id="cambiar-estado" class="form-control" style="max-width: 200px;">
+            <option value="Abierto">Abierto</option>
+            <option value="En revisión">En revisión</option>
+            <option value="En proceso">En proceso</option>
+            <option value="Resuelto">Resuelto</option>
+            <option value="Cerrado">Cerrado</option>
+          </select>
+          <button id="btn-estado" class="btn btn-secondary">Actualizar Estado</button>
+        </div>
+
+        <div id="seccion-resolucion" class="mt-md" style="display: none;">
+          <h4>Notas de Resolución</h4>
+          <textarea id="resolucion-texto" class="form-control mt-sm" placeholder="Explica cómo se resolvió este ticket..."></textarea>
+          <button id="btn-resolucion" class="btn btn-primary mt-sm">Guardar Resolución</button>
+        </div>
+      </div>
+
+      <!-- Observaciones Técnicas -->
+      <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h3>Observaciones Técnicas</h3>
+        
+        <div id="observaciones-list" class="observaciones-list mt-md"></div>
+        <p id="no-observaciones" style="color: #6b7280; font-size: 0.875rem; margin-top: 1rem;">No hay observaciones técnicas todavía.</p>
+
+        <form id="form-observacion" class="mt-md" style="border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
+          <div class="form-group">
+            <label for="nueva-obs">Agregar Observación</label>
+            <textarea id="nueva-obs" class="form-control" placeholder="Sugiere mejoras en el código, posibles bugs, etc..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Enviar Observación</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.x/highlight.min.js"></script>
+  <script type="module" src="/static/js/nav.js"></script>
+  <script type="module" src="/static/js/detalle.js"></script>
+</body>
+</html>

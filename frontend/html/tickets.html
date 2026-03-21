@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Tickets - Listado</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+  <nav class="main-nav">
+    <a href="/" class="nav-brand">DevSupport</a>
+    <div class="nav-links" id="nav-links">
+      <a href="/tickets" style="color: #2563eb;">Tickets</a>
+      <a href="/crear">Nuevo Ticket</a>
+      <a href="/login" id="nav-auth-link">Login</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="flex justify-between items-center mb-md">
+      <h2>Listado de Tickets</h2>
+      <a href="/crear" class="btn btn-primary">Nuevo Ticket</a>
+    </div>
+
+    <!-- Filtros -->
+    <div style="background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+      <form id="filtros-form" class="flex items-center gap-md" style="flex-wrap: wrap;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="filtro-estado">Estado</label>
+          <select id="filtro-estado" class="form-control" style="min-width: 150px;">
+            <option value="">Todos</option>
+            <option value="Abierto">Abierto</option>
+            <option value="En revisión">En revisión</option>
+            <option value="En proceso">En proceso</option>
+            <option value="Resuelto">Resuelto</option>
+            <option value="Cerrado">Cerrado</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="filtro-prioridad">Prioridad</label>
+          <select id="filtro-prioridad" class="form-control" style="min-width: 150px;">
+            <option value="">Todas</option>
+            <option value="Baja">Baja</option>
+            <option value="Media">Media</option>
+            <option value="Alta">Alta</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="filtro-categoria">Categoría</label>
+          <select id="filtro-categoria" class="form-control" style="min-width: 150px;">
+            <option value="">Todas</option>
+            <option value="Bug">Bug</option>
+            <option value="Consulta">Consulta</option>
+            <option value="Mejora">Mejora</option>
+            <option value="Revisión de código">Revisión de código</option>
+          </select>
+        </div>
+        <div style="margin-top: auto; padding-bottom: 2px;">
+          <button type="submit" class="btn btn-secondary">Filtrar</button>
+          <button type="button" id="btn-limpiar" class="btn" style="background: none; color: #2563eb;">Limpiar</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="tickets-error" style="color: red; margin-bottom: 1rem;"></div>
+
+    <!-- Tabla -->
+    <div class="tickets-table-container">
+      <table class="tickets-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Categoría</th>
+            <th>Estado</th>
+            <th>Prioridad</th>
+            <th>Fecha Creación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tickets-body">
+          <tr>
+            <td colspan="7" style="text-align: center; color: #6b7280; padding: 2rem;">Cargando tickets...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script type="module" src="/static/js/nav.js"></script>
+  <script type="module" src="/static/js/tickets.js"></script>
+</body>
+</html>

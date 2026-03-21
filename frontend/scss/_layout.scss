@@ -1,0 +1,79 @@
+@use 'variables' as *;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-stack;
+  color: $gray-900;
+  line-height: 1.5;
+  background-color: $gray-50;
+}
+
+// Navegación principal
+.main-nav {
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: $spacing-md $spacing-xl;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .nav-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: $primary;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: $spacing-md;
+
+    a {
+      text-decoration: none;
+      color: $gray-700;
+      font-weight: 500;
+      
+      &:hover {
+        color: $primary;
+      }
+    }
+  }
+}
+
+// Contenedor principal
+.container {
+  max-width: $bp-lg;
+  margin: 0 auto;
+  padding: $spacing-xl;
+
+  @media (max-width: $bp-md) {
+    padding: $spacing-md;
+  }
+}
+
+// Utilidades Grid / Flex
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-sm { gap: $spacing-sm; }
+.gap-md { gap: $spacing-md; }
+.mt-sm { margin-top: $spacing-sm; }
+.mt-md { margin-top: $spacing-md; }
+.mb-sm { margin-bottom: $spacing-sm; }
+.mb-md { margin-bottom: $spacing-md; }
+
+// Tipografía base
+h1, h2, h3, h4 {
+  color: $gray-900;
+  font-weight: 600;
+  margin-bottom: $spacing-md;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }

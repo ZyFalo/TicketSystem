@@ -1,0 +1,41 @@
+// Paleta de colores principal
+$primary: #2563eb;
+$primary-hover: #1d4ed8;
+$secondary: #64748b;
+$success: #10b981;
+$danger: #ef4444;
+$warning: #f59e0b;
+$info: #3b82f6;
+$purple: #8b5cf6;
+
+// Grises
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+// Colores por estado (badges)
+$state-abierto: $info;
+$state-en-revision: $warning;
+$state-en-proceso: $purple;
+$state-resuelto: $success;
+$state-cerrado: $secondary;
+
+// Tipografía
+$font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+$font-mono: 'Fira Code', 'Courier New', Courier, monospace;
+
+// Espaciados
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+
+// Breakpoints
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;

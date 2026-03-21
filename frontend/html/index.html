@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Tickets - Inicio</title>
+  <link rel="stylesheet" href="/static/css/main.css"> <!-- Se asume compilación SCSS -->
+</head>
+<body>
+  <!-- Navegación compartida -->
+  <nav class="main-nav">
+    <a href="/" class="nav-brand">DevSupport</a>
+    <div class="nav-links" id="nav-links">
+      <a href="/tickets">Tickets</a>
+      <a href="/crear">Nuevo Ticket</a>
+      <a href="/login" id="nav-auth-link">Login</a>
+    </div>
+  </nav>
+
+  <!-- Contenedor principal -->
+  <main class="container">
+    <div class="flex flex-col items-center gap-md">
+      <h1>Bienvenido al Sistema de Soporte</h1>
+      <p>Plataforma para crear, gestionar y resolver tickets de soporte técnico, incluyendo la revisión de fragmentos de código.</p>
+      
+      <div class="flex gap-md mt-md">
+        <a href="/crear" class="btn btn-primary">Crear Ticket</a>
+        <a href="/tickets" class="btn btn-secondary">Ver Tickets</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/static/js/nav.js"></script>
+</body>
+</html>
