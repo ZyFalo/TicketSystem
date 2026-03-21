@@ -60,4 +60,17 @@ def seed_catalogos():
         for p in prioridades:
             session.add(p)
 
+        # Usuarios de prueba
+        from passlib.context import CryptContext
+        from backend.app.models import Usuario
+        pwd = CryptContext(schemes=["bcrypt"])
+
+        usuarios_test = [
+            Usuario(nombre="Cliente Demo", email="cliente@demo.com", password_hash=pwd.hash("demo123"), rol="cliente"),
+            Usuario(nombre="Developer Demo", email="dev@demo.com", password_hash=pwd.hash("demo123"), rol="developer"),
+            Usuario(nombre="Senior Demo", email="senior@demo.com", password_hash=pwd.hash("demo123"), rol="senior"),
+        ]
+        for u in usuarios_test:
+            session.add(u)
+
         session.commit()
