@@ -82,34 +82,6 @@
   }
 }
 
-// ─── Login Form Transition ─────────────────────────────
-
-.login-form-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
-}
-
-.login-panel {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-
-  &.is-hidden {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    opacity: 0;
-    transform: translateY(10px);
-    pointer-events: none;
-  }
-
-  &.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-}
-
 // ─── Table Row Animation ───────────────────────────────
 
 .animate-rows {
