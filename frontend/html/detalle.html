@@ -11,8 +11,10 @@
   <nav class="main-nav">
     <a href="/" class="nav-brand">DevSupport</a>
     <div class="nav-links" id="nav-links">
-      <a href="/tickets" style="color: #2563eb;">Tickets</a>
-      <a href="/crear">Nuevo Ticket</a>
+      <a href="/tickets">Tickets</a>
+      <a href="/tickets?mis=true" id="nav-mis-tickets" style="display:none;">Mis Tickets</a>
+      <a href="/crear" id="nav-crear" style="display:none;">Nuevo Ticket</a>
+      <a href="/usuarios" id="nav-usuarios" style="display:none;">Usuarios</a>
       <a href="/login" id="nav-auth-link">Login</a>
     </div>
   </nav>
@@ -35,7 +37,22 @@
           <span>ID: #<span id="ticket-id"></span></span>
           <span>Categoría: <span id="ticket-categoria"></span></span>
           <span>Creado el <span id="ticket-fecha"></span></span>
+          <span>Creador: <strong id="ticket-creador"></strong></span>
         </div>
+        <div class="ticket-meta" style="margin-top: 0.5rem;">
+          <span>Responsables: <span id="asignados-list">Sin asignar</span></span>
+        </div>
+      </div>
+
+      <!-- Motivo de rechazo (solo lectura) -->
+      <div id="seccion-rechazo" style="display: none; background: #fef2f2; border: 1px solid #fecaca; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h4 style="color: #dc2626; margin: 0 0 0.5rem;">Ticket Rechazado</h4>
+        <p id="motivo-rechazo-texto" style="color: #374151; white-space: pre-wrap;"></p>
+      </div>
+
+      <!-- Botón cancelar para cliente -->
+      <div id="seccion-cancelar" style="display: none; margin-bottom: 2rem;">
+        <button id="btn-cancelar-ticket" class="btn" style="background: #dc2626; color: white;">Cancelar Ticket</button>
       </div>
 
       <!-- Descripción -->
@@ -52,24 +69,70 @@
         <pre><code id="codigo-bloque"></code></pre>
       </div>
 
-      <!-- Controles y Resolución -->
-      <div style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h3>Gestión de Estado</h3>
-        <div class="flex gap-md mt-sm items-center">
-          <select id="cambiar-estado" class="form-control" style="max-width: 200px;">
-            <option value="Abierto">Abierto</option>
-            <option value="En revisión">En revisión</option>
-            <option value="En proceso">En proceso</option>
-            <option value="Resuelto">Resuelto</option>
-            <option value="Cerrado">Cerrado</option>
-          </select>
-          <button id="btn-estado" class="btn btn-secondary">Actualizar Estado</button>
+      <!-- Gestión del ticket (estado + asignados + resolución + rechazo) -->
+      <div class="gestion-estado-container" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h3>Gestión del Ticket</h3>
+
+        <!-- Estado -->
+        <div class="mt-sm">
+          <label style="font-weight: 600; font-size: 0.875rem;">Estado</label>
+          <div class="flex gap-md mt-sm items-center">
+            <select id="cambiar-estado" class="form-control" style="max-width: 200px;"></select>
+            <span id="estado-tooltip" style="display: none; font-size: 0.8rem; color: #f59e0b; max-width: 300px;"></span>
+          </div>
         </div>
 
+        <!-- Clasificación: categoría y prioridad (senior) -->
+        <div id="seccion-clasificacion" class="mt-md" style="display: none;">
+          <div class="flex gap-md">
+            <div class="form-group" style="flex: 1; margin-bottom: 0;">
+              <label for="editar-categoria" style="font-weight: 600; font-size: 0.875rem;">Categoría</label>
+              <select id="editar-categoria" class="form-control">
+                <option value="">Selecciona...</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex: 1; margin-bottom: 0;">
+              <label for="editar-prioridad" style="font-weight: 600; font-size: 0.875rem;">Prioridad</label>
+              <select id="editar-prioridad" class="form-control">
+                <option value="">Selecciona...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Motivo rechazo input -->
+        <div id="seccion-motivo-input" class="mt-md" style="display: none;">
+          <label style="font-weight: 600; font-size: 0.875rem;">Motivo de Rechazo</label>
+          <textarea id="motivo-rechazo-input" class="form-control mt-sm" placeholder="Explica por qué se rechaza este ticket..." required></textarea>
+        </div>
+
+        <!-- Resolución -->
         <div id="seccion-resolucion" class="mt-md" style="display: none;">
-          <h4>Notas de Resolución</h4>
-          <textarea id="resolucion-texto" class="form-control mt-sm" placeholder="Explica cómo se resolvió este ticket..."></textarea>
-          <button id="btn-resolucion" class="btn btn-primary mt-sm">Guardar Resolución</button>
+          <label style="font-weight: 600; font-size: 0.875rem;">Notas de Resolución (opcional)</label>
+          <textarea id="resolucion-texto" class="form-control mt-sm" placeholder="Describe cómo se resolvió este ticket..."></textarea>
+        </div>
+
+        <button id="btn-guardar-gestion" class="btn btn-primary mt-md">Guardar</button>
+      </div>
+
+      <!-- Responsables (formulario separado, solo seniors) -->
+      <div id="seccion-responsables-container" class="gestion-estado-container" style="display: none; background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h3>Responsables</h3>
+        <div id="seccion-asignacion" class="mt-sm">
+          <div id="asignacion-checkboxes" style="max-height: 200px; overflow-y: auto;"></div>
+        </div>
+        <button id="btn-guardar-responsables" class="btn btn-primary mt-md">Guardar Responsables</button>
+      </div>
+
+      <!-- Historiales lado a lado -->
+      <div class="historial-container">
+        <div style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <h3>Historial de Estados</h3>
+          <div id="historial-estados" class="mt-sm"></div>
+        </div>
+        <div id="historial-asignaciones-container" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <h3>Historial de Asignaciones</h3>
+          <div id="historial-asignaciones" class="mt-sm"></div>
         </div>
       </div>
 

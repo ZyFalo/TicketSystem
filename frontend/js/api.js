@@ -5,8 +5,10 @@ const API_BASE_URL = '/api';
  */
 async function handleResponse(response) {
   if (response.status === 401) {
-    // Redirigir a login en caso de no autorizado rnf
-    window.location.href = '/login';
+    const page = window.location.pathname;
+    if (page !== '/' && page !== '/login') {
+      window.location.href = '/login';
+    }
     throw new Error('No autorizado');
   }
 

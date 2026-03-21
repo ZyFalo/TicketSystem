@@ -19,12 +19,12 @@ El proyecto SHALL definir modelos SQLModel para Usuario, Ticket y Observacion co
 - **WHEN** se inspeccionan los modelos en models.py
 - **THEN** contienen todos los campos definidos en la especificación (ID, título, descripción, categoría, prioridad, estado, fechas, fragmento de código, lenguaje, resolución, observaciones, usuario creador, usuario asignado)
 
-### Requirement: Migraciones Alembic
-El proyecto SHALL usar Alembic para gestionar migraciones de base de datos.
+### Requirement: Migración Alembic
+La migración SHALL crear tablas de catálogo, insertar seed, migrar datos existentes de string a FK y eliminar columnas string.
 
-#### Scenario: Migración inicial crea tablas
+#### Scenario: Migración completa
 - **WHEN** se ejecuta alembic upgrade head
-- **THEN** se crean las tablas usuarios, tickets y observaciones en PostgreSQL
+- **THEN** existen tablas categorias/prioridades/estados con datos, tickets tienen FK, columnas string eliminadas
 
 ### Requirement: Configuración por variables de entorno
 El proyecto SHALL usar Pydantic Settings para leer DATABASE_URL y SECRET_KEY desde variables de entorno con valores por defecto para desarrollo local.

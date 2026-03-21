@@ -11,7 +11,9 @@
     <a href="/" class="nav-brand">DevSupport</a>
     <div class="nav-links" id="nav-links">
       <a href="/tickets">Tickets</a>
-      <a href="/crear" style="color: #2563eb;">Nuevo Ticket</a>
+      <a href="/tickets?mis=true" id="nav-mis-tickets" style="display:none;">Mis Tickets</a>
+      <a href="/crear" id="nav-crear" style="display:none;">Nuevo Ticket</a>
+      <a href="/usuarios" id="nav-usuarios" style="display:none;">Usuarios</a>
       <a href="/login" id="nav-auth-link">Login</a>
     </div>
   </nav>
@@ -26,23 +28,17 @@
           <input type="text" id="titulo" class="form-control" required placeholder="Ej. El servidor devuelve error 500 al guardar">
         </div>
 
-        <div class="flex gap-md">
+        <div id="campos-clasificacion" class="flex gap-md" style="display:none;">
           <div class="form-group" style="flex: 1;">
             <label for="categoria">Categoría</label>
-            <select id="categoria" class="form-control" required>
+            <select id="categoria" class="form-control">
               <option value="">Selecciona...</option>
-              <option value="Servidor">Servidor</option>
-              <option value="Base de Datos">Base de Datos</option>
-              <option value="Frontend">Frontend</option>
-              <option value="Bug">Bug</option>
             </select>
           </div>
           <div class="form-group" style="flex: 1;">
             <label for="prioridad">Prioridad</label>
-            <select id="prioridad" class="form-control" required>
-              <option value="Baja">Baja</option>
-              <option value="Media" selected>Media</option>
-              <option value="Alta">Alta</option>
+            <select id="prioridad" class="form-control">
+              <option value="">Selecciona...</option>
             </select>
           </div>
         </div>
@@ -74,7 +70,15 @@
           <textarea id="codigo" class="form-control" style="font-family: monospace; min-height: 150px; background-color: #f9fafb;" placeholder="function ejemplo() { ... }"></textarea>
         </div>
 
-        <div id="crear-error" style="color: red; font-size: 0.875rem; margin-bottom: 1rem;"></div>
+        <div id="seccion-asignados" style="display:none;">
+          <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e5e7eb;">
+
+          <h3>Asignar Responsables (Opcional)</h3>
+          <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1rem;">Selecciona los desarrolladores que trabajarán en este ticket.</p>
+          <div id="asignados-checkboxes" style="max-height: 200px; overflow-y: auto;"></div>
+        </div>
+
+        <div id="crear-error" style="color: red; font-size: 0.875rem; margin-bottom: 1rem; margin-top: 1rem;"></div>
 
         <div class="flex justify-between items-center mt-md">
           <a href="/tickets" class="btn btn-secondary">Cancelar</a>

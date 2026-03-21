@@ -10,8 +10,10 @@
   <nav class="main-nav">
     <a href="/" class="nav-brand">DevSupport</a>
     <div class="nav-links" id="nav-links">
-      <a href="/tickets" style="color: #2563eb;">Tickets</a>
-      <a href="/crear">Nuevo Ticket</a>
+      <a href="/tickets">Tickets</a>
+      <a href="/tickets?mis=true" id="nav-mis-tickets" style="display:none;">Mis Tickets</a>
+      <a href="/crear" id="nav-crear" style="display:none;">Nuevo Ticket</a>
+      <a href="/usuarios" id="nav-usuarios" style="display:none;">Usuarios</a>
       <a href="/login" id="nav-auth-link">Login</a>
     </div>
   </nav>
@@ -19,7 +21,7 @@
   <main class="container">
     <div class="flex justify-between items-center mb-md">
       <h2>Listado de Tickets</h2>
-      <a href="/crear" class="btn btn-primary">Nuevo Ticket</a>
+      <a href="/crear" class="btn btn-primary" id="btn-nuevo-ticket" style="display:none;">Nuevo Ticket</a>
     </div>
 
     <!-- Filtros -->
@@ -29,31 +31,23 @@
           <label for="filtro-estado">Estado</label>
           <select id="filtro-estado" class="form-control" style="min-width: 150px;">
             <option value="">Todos</option>
-            <option value="Abierto">Abierto</option>
-            <option value="En revisión">En revisión</option>
-            <option value="En proceso">En proceso</option>
-            <option value="Resuelto">Resuelto</option>
-            <option value="Cerrado">Cerrado</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom: 0;">
           <label for="filtro-prioridad">Prioridad</label>
           <select id="filtro-prioridad" class="form-control" style="min-width: 150px;">
             <option value="">Todas</option>
-            <option value="Baja">Baja</option>
-            <option value="Media">Media</option>
-            <option value="Alta">Alta</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom: 0;">
           <label for="filtro-categoria">Categoría</label>
           <select id="filtro-categoria" class="form-control" style="min-width: 150px;">
             <option value="">Todas</option>
-            <option value="Bug">Bug</option>
-            <option value="Consulta">Consulta</option>
-            <option value="Mejora">Mejora</option>
-            <option value="Revisión de código">Revisión de código</option>
           </select>
+        </div>
+        <div id="filtro-mis-tickets-container" class="form-group" style="margin-bottom: 0; display: none; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="filtro-mis-tickets">
+          <label for="filtro-mis-tickets" style="margin: 0; font-weight: 500;">Mis tickets</label>
         </div>
         <div style="margin-top: auto; padding-bottom: 2px;">
           <button type="submit" class="btn btn-secondary">Filtrar</button>
@@ -74,13 +68,15 @@
             <th>Categoría</th>
             <th>Estado</th>
             <th>Prioridad</th>
-            <th>Fecha Creación</th>
+            <th>Creador</th>
+            <th>Asignados</th>
+            <th>Fecha</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="tickets-body">
           <tr>
-            <td colspan="7" style="text-align: center; color: #6b7280; padding: 2rem;">Cargando tickets...</td>
+            <td colspan="9" style="text-align: center; color: #6b7280; padding: 2rem;">Cargando tickets...</td>
           </tr>
         </tbody>
       </table>

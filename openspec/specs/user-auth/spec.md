@@ -4,11 +4,11 @@
 TBD - created by archiving change sistema-tickets-soporte. Update Purpose after archive.
 ## Requirements
 ### Requirement: Registro de usuario
-El sistema SHALL permitir crear cuentas de usuario con nombre, email y contraseña.
+El sistema SHALL permitir crear cuentas de usuario con nombre, email y contraseña. El rol asignado siempre es "cliente".
 
 #### Scenario: Registro exitoso
 - **WHEN** un visitante envía nombre, email único y contraseña válida
-- **THEN** el sistema crea la cuenta con la contraseña hasheada y redirige al login
+- **THEN** el sistema crea la cuenta con rol "cliente" y contraseña hasheada
 
 #### Scenario: Email duplicado
 - **WHEN** un visitante intenta registrarse con un email ya existente
@@ -48,9 +48,9 @@ Las rutas de la API bajo /api/ (excepto login, registro y archivos estáticos) S
 - **THEN** el sistema responde con error 401
 
 ### Requirement: Consultar usuario actual
-El sistema SHALL exponer un endpoint /api/me que retorne los datos del usuario autenticado.
+El sistema SHALL exponer un endpoint /api/me que retorne los datos del usuario autenticado incluyendo su rol.
 
 #### Scenario: Usuario autenticado
 - **WHEN** un usuario con sesión activa consulta /api/me
-- **THEN** el sistema responde con id, nombre y email (sin contraseña)
+- **THEN** el sistema responde con id, nombre, email y rol (sin contraseña)
 

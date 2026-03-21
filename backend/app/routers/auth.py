@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from passlib.context import CryptContext
-from sqlmodel import Session, select
+from sqlmodel import Session, SQLModel, select
 
 from backend.app.config import settings
 from backend.app.database import get_session
@@ -15,15 +15,14 @@ serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
 SESSION_MAX_AGE = 86400  # 24 horas
 
 
-# ─── Dependencia de autenticación ──────────────────────────
-
-from sqlmodel import SQLModel  # noqa: E402
-
+# ─── Request schemas ──────────────────────────────────────
 
 class LoginRequest(SQLModel):
     email: str
     password: str
 
+
+# ─── Dependencias de autenticación ─────────────────────────
 
 def get_current_user(
     session: str | None = Cookie(default=None),
@@ -44,11 +43,19 @@ def get_current_user(
     return user
 
 
+def require_senior(
+    current_user: Usuario = Depends(get_current_user),
+) -> Usuario:
+    if current_user.rol != "senior":
+        raise HTTPException(status_code=403, detail="Se requiere rol senior")
+    return current_user
+
+
 # ─── Endpoints ─────────────────────────────────────────────
 
 @router.post("/register", response_model=UsuarioRead, status_code=201)
 def register(usuario: UsuarioCreate, db: Session = Depends(get_session)):
-    """Registrar un nuevo usuario."""
+    """Registrar un nuevo usuario (siempre como cliente)."""
     existing = db.exec(select(Usuario).where(Usuario.email == usuario.email)).first()
     if existing:
         raise HTTPException(status_code=409, detail="Email ya registrado")
@@ -57,6 +64,7 @@ def register(usuario: UsuarioCreate, db: Session = Depends(get_session)):
         nombre=usuario.nombre,
         email=usuario.email,
         password_hash=pwd_context.hash(usuario.password),
+        rol="cliente",
     )
     db.add(user)
     db.commit()
@@ -91,5 +99,5 @@ def logout(response: Response):
 
 @router.get("/me", response_model=UsuarioRead)
 def me(current_user: Usuario = Depends(get_current_user)):
-    """Obtener datos del usuario autenticado."""
+    """Obtener datos del usuario autenticado (incluye rol)."""
     return current_user

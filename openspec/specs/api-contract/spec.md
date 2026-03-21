@@ -33,6 +33,13 @@ El contrato API SHALL definir PATCH /api/tickets/{id}/resolver con schema que re
 - **WHEN** un desarrollador accede a /docs
 - **THEN** el endpoint de resolución aparece con body obligatorio de texto
 
+### Requirement: Endpoint de opciones
+El endpoint GET /api/tickets/opciones SHALL retornar objetos {id, nombre} para categorías, prioridades y estados, consultando las tablas de BD.
+
+#### Scenario: Opciones con IDs
+- **WHEN** un usuario consulta GET /api/tickets/opciones
+- **THEN** retorna {estados: [{id, nombre, color}], categorias: [{id, nombre}], prioridades: [{id, nombre, orden}]}
+
 ### Requirement: Stubs funcionales
 Todos los endpoints SHALL retornar datos mock válidos según sus schemas de response para que Swagger UI sea interactivo.
 

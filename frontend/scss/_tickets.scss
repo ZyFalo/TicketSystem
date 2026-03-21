@@ -43,11 +43,13 @@
   letter-spacing: 0.05em;
   color: white;
 
+  &-pendiente { background-color: #f97316; }
   &-abierto { background-color: $state-abierto; }
   &-en-revision { background-color: $state-en-revision; }
   &-en-proceso { background-color: $state-en-proceso; }
   &-resuelto { background-color: $state-resuelto; }
   &-cerrado { background-color: $state-cerrado; }
+  &-rechazado { background-color: #dc2626; }
 
   &-alta { background-color: $danger; }
   &-media { background-color: $warning; }
@@ -68,5 +70,15 @@
     margin-top: $spacing-sm;
     color: $gray-700;
     font-size: 0.875rem;
+  }
+}
+
+// Historiales lado a lado
+.historial-container {
+  display: flex;
+  gap: 1.5rem;
+
+  & > div {
+    flex: 1;
   }
 }

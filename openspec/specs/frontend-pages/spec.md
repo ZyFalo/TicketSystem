@@ -24,15 +24,15 @@ El sistema SHALL presentar formularios de login y registro con campos email y co
 - **THEN** puede alternar entre el formulario de login y el de registro sin recargar la página
 
 ### Requirement: Página de creación de ticket (crear.html)
-El sistema SHALL presentar un formulario con campos: título, descripción, categoría (select), prioridad (select), fragmento de código (textarea opcional) y lenguaje de programación (select, visible solo si hay código).
+El formulario SHALL adaptarse al rol: cliente ve título + descripción + código opcional. Senior ve título + descripción + categoría + prioridad + código + asignados.
 
-#### Scenario: Formulario completo
-- **WHEN** un usuario autenticado accede a /crear
-- **THEN** ve el formulario con todos los campos requeridos y opcionales
+#### Scenario: Formulario cliente
+- **WHEN** un cliente accede a /crear
+- **THEN** ve solo título, descripción y código opcional
 
-#### Scenario: Campo de código condicional
-- **WHEN** el usuario activa la opción de incluir código
-- **THEN** aparecen los campos de fragmento de código y selección de lenguaje
+#### Scenario: Formulario senior
+- **WHEN** un senior accede a /crear
+- **THEN** ve todos los campos incluyendo categoría, prioridad y asignados
 
 ### Requirement: Página de listado de tickets (tickets.html)
 El sistema SHALL mostrar una tabla/listado de tickets con columnas: ID, título, estado (con badge de color), prioridad, categoría y fecha. Incluye filtros por estado, prioridad y categoría.
@@ -46,19 +46,42 @@ El sistema SHALL mostrar una tabla/listado de tickets con columnas: ID, título,
 - **THEN** la tabla se actualiza mostrando solo los tickets que coinciden, sin recargar la página
 
 ### Requirement: Página de detalle de ticket (detalle.html)
-El sistema SHALL mostrar la información completa del ticket, sus observaciones, el fragmento de código (con syntax highlighting si aplica), controles para cambiar estado, formulario de observaciones y sección de resolución.
+El detalle SHALL mostrar el motivo de rechazo cuando el ticket está en estado "Rechazado". El cliente puede ver un botón "Cancelar" si el ticket está en "Pendiente". El detalle SHALL mostrar el historial de estados y el historial de asignaciones lado a lado (50%/50%) usando CSS puro. Para clientes, el historial de estados ocupa 100% (asignaciones ocultas).
 
-#### Scenario: Vista completa del ticket
-- **WHEN** un usuario accede a /ticket/{id}
-- **THEN** ve todos los campos del ticket, historial de observaciones, y controles de estado
+#### Scenario: Motivo de rechazo visible
+- **WHEN** un usuario ve un ticket con estado "Rechazado"
+- **THEN** el motivo de rechazo se muestra en el detalle
 
-#### Scenario: Código con syntax highlighting
-- **WHEN** el ticket tiene fragmento de código
-- **THEN** se renderiza con highlight.js aplicando el lenguaje indicado
+#### Scenario: Botón cancelar para cliente
+- **WHEN** un cliente ve su ticket en estado "Pendiente"
+- **THEN** ve un botón "Cancelar Ticket" que elimina el ticket
+
+#### Scenario: Layout 50/50 para senior/developer
+- **WHEN** un senior o developer ve el detalle de un ticket
+- **THEN** ve historial de estados a la izquierda (50%) e historial de asignaciones a la derecha (50%)
+
+#### Scenario: Layout 100% para cliente
+- **WHEN** un cliente ve el detalle de su ticket
+- **THEN** ve solo el historial de estados ocupando el 100% del ancho
 
 ### Requirement: Navegación compartida
-Todas las páginas SHALL incluir una barra de navegación con enlaces a: Inicio, Crear Ticket, Ver Tickets, y Login/Logout según el estado de autenticación.
+La nav SHALL adaptarse a tres roles: cliente ve Inicio + Nuevo Ticket + Mis Tickets + Logout. Developer ve Inicio + Tickets + Logout. Senior ve Inicio + Nuevo Ticket + Tickets + Usuarios + Logout.
 
-#### Scenario: Nav muestra estado de sesión
-- **WHEN** el usuario está autenticado
-- **THEN** la nav muestra su nombre y un enlace de logout en lugar del enlace de login
+#### Scenario: Nav para cliente
+- **WHEN** un cliente está autenticado
+- **THEN** la nav muestra Inicio, Nuevo Ticket, Mis Tickets, Logout
+
+#### Scenario: Nav para developer
+- **WHEN** un developer está autenticado
+- **THEN** la nav muestra Inicio, Tickets, Logout
+
+#### Scenario: Nav para senior
+- **WHEN** un senior está autenticado
+- **THEN** la nav muestra Inicio, Nuevo Ticket, Tickets, Usuarios, Logout
+
+### Requirement: Página de gestión de usuarios (usuarios.html)
+El sistema SHALL presentar una página /usuarios solo accesible por seniors con tabla de usuarios y botón para cambiar rol.
+
+#### Scenario: Panel de usuarios
+- **WHEN** un senior accede a /usuarios
+- **THEN** ve tabla con ID, nombre, email, rol actual y botón Promover/Degradar

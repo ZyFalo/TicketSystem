@@ -5,7 +5,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.app.database import create_db_and_tables
-from backend.app.routers import auth, tickets
+from backend.app.routers import auth, tickets, usuarios
 
 
 @asynccontextmanager
@@ -17,12 +17,13 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Sistema de Tickets - Soporte Técnico",
     description="API para gestión de tickets de soporte técnico y revisión de fragmentos de código",
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
 )
 
 app.include_router(auth.router)
 app.include_router(tickets.router)
+app.include_router(usuarios.router)
 
 
 # ─── Rutas de páginas HTML ─────────────────────────────────
@@ -50,6 +51,11 @@ def tickets_page():
 @app.get("/ticket/{ticket_id}", include_in_schema=False)
 def detalle_page(ticket_id: int):
     return FileResponse("frontend/html/detalle.html")
+
+
+@app.get("/usuarios", include_in_schema=False)
+def usuarios_page():
+    return FileResponse("frontend/html/usuarios.html")
 
 
 # ─── Archivos estáticos (CSS, JS, etc.) ───────────────────
