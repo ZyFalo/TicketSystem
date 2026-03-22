@@ -241,12 +241,12 @@ async function loadTicket() {
       // Clasificacion y responsables: ocultar si Cerrado o Rechazado
       const esTerminal = estadoNombre === 'Cerrado' || estadoNombre === 'Rechazado';
 
-      if (!esTerminal) {
+      if (esTerminal) {
+        hideSection(gestionEstado);
+        hideSection(responsablesContainer);
+      } else {
         showSection(secClasificacion);
         await loadOpcionesClasificacion(ticket);
-      }
-
-      if (!esTerminal) {
         showSection(responsablesContainer);
         await loadAsignacionUI(ticket.asignados || []);
       }
