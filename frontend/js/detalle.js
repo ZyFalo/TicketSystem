@@ -242,7 +242,19 @@ async function loadTicket() {
       const esTerminal = estadoNombre === 'Cerrado' || estadoNombre === 'Rechazado';
 
       if (esTerminal) {
-        hideSection(gestionEstado);
+        // Mostrar todo en modo lectura
+        showSection(secClasificacion);
+        await loadOpcionesClasificacion(ticket);
+        if (editarCategoria) editarCategoria.disabled = true;
+        if (editarPrioridad) editarPrioridad.disabled = true;
+        if (secResolucion && ticket.resolucion) {
+          showSection(secResolucion);
+          txtResolucion.value = ticket.resolucion;
+          txtResolucion.disabled = true;
+        }
+        // Ocultar botón guardar y responsables
+        const btnGuardar = document.getElementById('btn-guardar-gestion');
+        if (btnGuardar) btnGuardar.style.display = 'none';
         hideSection(responsablesContainer);
       } else {
         showSection(secClasificacion);
