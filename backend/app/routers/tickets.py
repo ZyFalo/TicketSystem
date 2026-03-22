@@ -36,33 +36,45 @@ router = APIRouter(prefix="/api", tags=["Tickets"])
 # ─── Request schemas ───────────────────────────────────────
 
 class CambiarEstadoRequest(SQLModel):
-    estado: str  # nombre del estado destino
+    estado_id: int
     resolucion: str | None = None
     motivo_rechazo: str | None = None
 
 
-# ─── Transiciones de estado por rol (por nombre) ──────────
+# ─── IDs de estado (seed fijo en database.py) ─────────────
+# 1=Pendiente, 2=Abierto, 3=En revisión, 4=En proceso,
+# 5=Resuelto, 6=Cerrado, 7=Rechazado
+
+E_PENDIENTE = 1
+E_ABIERTO = 2
+E_EN_REVISION = 3
+E_EN_PROCESO = 4
+E_RESUELTO = 5
+E_CERRADO = 6
+E_RECHAZADO = 7
+
+# ─── Transiciones de estado por rol (por ID) ───────────────
 
 TRANSICIONES_SENIOR = {
-    "Pendiente": ["Abierto", "Rechazado"],
-    "Abierto": ["En revisión"],
-    "En revisión": ["En proceso"],
-    "En proceso": ["Resuelto", "En revisión"],
-    "Resuelto": ["Cerrado", "En proceso"],
+    E_PENDIENTE: [E_ABIERTO, E_RECHAZADO],       # Pendiente → Abierto | Rechazado
+    E_ABIERTO: [E_EN_REVISION],                   # Abierto → En revisión
+    E_EN_REVISION: [E_EN_PROCESO],                # En revisión → En proceso
+    E_EN_PROCESO: [E_RESUELTO, E_EN_REVISION],    # En proceso → Resuelto | En revisión
+    E_RESUELTO: [E_CERRADO, E_EN_PROCESO],        # Resuelto → Cerrado | En proceso
 }
 
 TRANSICIONES_DEVELOPER = {
-    "Abierto": ["En revisión"],
-    "En revisión": ["En proceso"],
-    "En proceso": ["Resuelto", "En revisión"],
+    E_ABIERTO: [E_EN_REVISION],                   # Abierto → En revisión
+    E_EN_REVISION: [E_EN_PROCESO],                # En revisión → En proceso
+    E_EN_PROCESO: [E_RESUELTO, E_EN_REVISION],    # En proceso → Resuelto | En revisión
 }
 
 TRANSICIONES_CLIENTE = {}
 
 ESTADOS_VISIBLES = {
-    "cliente": ["Pendiente", "Abierto", "En revisión", "En proceso", "Resuelto", "Cerrado", "Rechazado"],
-    "developer": ["Abierto", "En revisión", "En proceso", "Resuelto", "Cerrado"],
-    "senior": ["Pendiente", "Abierto", "En revisión", "En proceso", "Resuelto", "Cerrado", "Rechazado"],
+    "cliente": [E_PENDIENTE, E_ABIERTO, E_EN_REVISION, E_EN_PROCESO, E_RESUELTO, E_CERRADO, E_RECHAZADO],
+    "developer": [E_ABIERTO, E_EN_REVISION, E_EN_PROCESO, E_RESUELTO, E_CERRADO],
+    "senior": [E_PENDIENTE, E_ABIERTO, E_EN_REVISION, E_EN_PROCESO, E_RESUELTO, E_CERRADO, E_RECHAZADO],
 }
 
 
@@ -75,15 +87,8 @@ def _get_ticket_or_404(ticket_id: int, db: Session) -> Ticket:
     return ticket
 
 
-def _get_estado_by_nombre(nombre: str, db: Session) -> Estado:
-    estado = db.exec(select(Estado).where(Estado.nombre == nombre)).first()
-    if not estado:
-        raise HTTPException(status_code=400, detail=f"Estado '{nombre}' no encontrado")
-    return estado
-
-
 def _get_estado_inicial(db: Session) -> Estado:
-    return _get_estado_by_nombre("Pendiente", db)
+    return db.get(Estado, E_PENDIENTE)
 
 
 def _get_asignados(ticket_id: int, db: Session) -> list[Usuario]:
@@ -153,8 +158,8 @@ def opciones_filtro(
 ):
     """Retorna estados, prioridades y categorías desde BD según rol."""
     all_estados = db.exec(select(Estado)).all()
-    nombres_visibles = ESTADOS_VISIBLES.get(current_user.rol, [])
-    estados = [EstadoRead.model_validate(e) for e in all_estados if e.nombre in nombres_visibles]
+    ids_visibles = ESTADOS_VISIBLES.get(current_user.rol, [])
+    estados = [EstadoRead.model_validate(e) for e in all_estados if e.id in ids_visibles]
 
     categorias = [CategoriaRead.model_validate(c) for c in db.exec(select(Categoria)).all()]
     prioridades = [PrioridadRead.model_validate(p) for p in db.exec(select(Prioridad).order_by(Prioridad.orden)).all()]
@@ -180,12 +185,7 @@ def listar_tickets(
     if current_user.rol == "cliente":
         query = query.where(Ticket.creado_por == current_user.id)
     elif current_user.rol == "developer":
-        # Excluir Pendiente y Rechazado por estado_id
-        estados_excluidos = db.exec(
-            select(Estado.id).where(Estado.nombre.in_(["Pendiente", "Rechazado"]))
-        ).all()
-        if estados_excluidos:
-            query = query.where(Ticket.estado_id.not_in(estados_excluidos))
+        query = query.where(Ticket.estado_id.not_in([E_PENDIENTE, E_RECHAZADO]))
 
     # Filtros opcionales
     if estado_id:
@@ -280,8 +280,7 @@ def cancelar_ticket(
     if ticket.creado_por != current_user.id:
         raise HTTPException(status_code=403, detail="Solo el creador puede cancelar este ticket")
 
-    estado = db.get(Estado, ticket.estado_id)
-    if estado.nombre != "Pendiente":
+    if ticket.estado_id != E_PENDIENTE:
         raise HTTPException(status_code=400, detail="Solo se pueden cancelar tickets en estado Pendiente")
 
     db.delete(ticket)
@@ -299,7 +298,9 @@ def cambiar_estado(
     """Cambiar estado según rol y asignación."""
     ticket = _get_ticket_or_404(ticket_id, db)
     estado_actual = db.get(Estado, ticket.estado_id)
-    estado_destino = _get_estado_by_nombre(data.estado, db)
+    estado_destino = db.get(Estado, data.estado_id)
+    if not estado_destino:
+        raise HTTPException(status_code=400, detail=f"Estado con id {data.estado_id} no encontrado")
 
     # Seleccionar mapa de transiciones por rol
     if current_user.rol == "cliente":
@@ -311,15 +312,15 @@ def cambiar_estado(
             raise HTTPException(status_code=403, detail="No estás asignado a este ticket")
         transiciones = TRANSICIONES_DEVELOPER
 
-    estados_validos = transiciones.get(estado_actual.nombre, [])
-    if data.estado not in estados_validos:
+    estados_validos = transiciones.get(estado_actual.id, [])
+    if estado_destino.id not in estados_validos:
         raise HTTPException(
             status_code=400,
-            detail=f"Transición inválida para rol '{current_user.rol}': '{estado_actual.nombre}' → '{data.estado}'. Estados válidos: {estados_validos}",
+            detail=f"Transición inválida para rol '{current_user.rol}': '{estado_actual.nombre}' → '{estado_destino.nombre}'",
         )
 
     # Validaciones especiales
-    if estado_actual.nombre == "Pendiente" and data.estado == "Abierto":
+    if estado_actual.id == E_PENDIENTE and estado_destino.id == E_ABIERTO:
         if not ticket.categoria_id:
             raise HTTPException(status_code=400, detail="Se requiere categoría para clasificar el ticket")
         if not ticket.prioridad_id:
@@ -328,17 +329,17 @@ def cambiar_estado(
         if not asignados:
             raise HTTPException(status_code=400, detail="Se requiere al menos un responsable asignado para clasificar")
 
-    if estado_actual.nombre == "Pendiente" and data.estado == "Rechazado":
+    if estado_actual.id == E_PENDIENTE and estado_destino.id == E_RECHAZADO:
         if not data.motivo_rechazo or not data.motivo_rechazo.strip():
             raise HTTPException(status_code=422, detail="El motivo de rechazo es obligatorio")
         ticket.motivo_rechazo = data.motivo_rechazo.strip()
 
-    if estado_actual.nombre == "Abierto" and data.estado == "En revisión":
+    if estado_actual.id == E_ABIERTO and estado_destino.id == E_EN_REVISION:
         asignados = _get_asignados(ticket_id, db)
         if not asignados:
             raise HTTPException(status_code=400, detail="Se requiere al menos un responsable asignado para avanzar")
 
-    if data.estado == "Resuelto" and data.resolucion:
+    if estado_destino.id == E_RESUELTO and data.resolucion:
         ticket.resolucion = data.resolucion.strip()
 
     ticket.estado_id = estado_destino.id
@@ -374,9 +375,9 @@ def asignar_responsables(
 
     # Si lista queda vacía, volver a Pendiente
     if not data.usuario_ids:
-        estado_pendiente = _get_estado_by_nombre("Pendiente", db)
         estado_actual = db.get(Estado, ticket.estado_id)
-        if estado_actual.nombre != "Pendiente":
+        if estado_actual.id != E_PENDIENTE:
+            estado_pendiente = db.get(Estado, E_PENDIENTE)
             ticket.estado_id = estado_pendiente.id
             ticket.updated_at = datetime.now(UTC)
             db.add(ticket)
@@ -485,9 +486,8 @@ def crear_observacion(
 ):
     """Agregar una observación a un ticket."""
     ticket = _get_ticket_or_404(ticket_id, db)
-    estado = db.get(Estado, ticket.estado_id)
 
-    if estado.nombre in ("Cerrado", "Rechazado"):
+    if ticket.estado_id in (E_CERRADO, E_RECHAZADO):
         raise HTTPException(
             status_code=400,
             detail="No se pueden agregar observaciones a tickets cerrados o rechazados",

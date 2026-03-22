@@ -2,7 +2,7 @@
 
 ## Sistema de Tickets para Soporte Técnico y Revisión de Fragmentos de Código
 
-**Docente:** Javier Ochoa
+**Desarrollador:** William Peña
 **Tipo de documento:** Formato de ejecución y explicación del trabajo a realizar
 **Proyecto:** Sistema de gestión de solicitudes de soporte
 **Fecha:** 16 de marzo de 2026
@@ -75,7 +75,7 @@ Desarrollar un sistema web de gestión de solicitudes de soporte que permita cre
 | Campo | Detalle |
 |---|---|
 | Título del proyecto | Sistema de Tickets para Soporte Técnico y Revisión de Fragmentos de Código |
-| Docente | Javier Ochoa |
+| Desarrollador | William Peña |
 | Materia | Programación Web II |
 | Tipo de proyecto | Desarrollo de aplicación web |
 | Enfoque principal | Gestión de solicitudes, seguimiento y resolución |

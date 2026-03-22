@@ -84,3 +84,8 @@ ul, ol {
   background-color: var(--accent-subtle);
   color: var(--text-primary);
 }
+
+// Ensure [hidden] works even when other rules set display
+[hidden] {
+  display: none !important;
+}

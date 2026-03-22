@@ -45,6 +45,29 @@ const secClasificacion = document.getElementById('seccion-clasificacion');
 const editarCategoria = document.getElementById('editar-categoria');
 const editarPrioridad = document.getElementById('editar-prioridad');
 
+// Mapa nombre → id de estados (se carga desde la API)
+let estadosMap = {};
+
+function showSection(el) {
+  if (!el) return;
+  el.hidden = false;
+  el.classList.add('is-visible');
+}
+
+function hideSection(el) {
+  if (!el) return;
+  el.hidden = true;
+  el.classList.remove('is-visible');
+}
+
+function estadoOpt(nombre) {
+  return `<option value="${estadosMap[nombre] || ''}">${nombre}</option>`;
+}
+
+function getSelectedEstadoText() {
+  return selectEstado.options[selectEstado.selectedIndex]?.text || '';
+}
+
 function normalizeBadge(name) {
   return name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ /g, '-');
 }
@@ -100,6 +123,11 @@ async function loadTicket() {
   const userId = window.__userId;
 
   try {
+    // Cargar mapa de estados (nombre → id)
+    const opciones = await apiGet('/tickets/opciones');
+    estadosMap = {};
+    opciones.estados.forEach(e => { estadosMap[e.nombre] = e.id; });
+
     const ticket = await apiGet(`/tickets/${ticketId}`);
     const estadoNombre = ticket.estado ? ticket.estado.nombre : 'Pendiente';
 
@@ -124,19 +152,19 @@ async function loadTicket() {
     }
 
     // Motivo de rechazo
-    if (estadoNombre === 'Rechazado' && secRechazo) {
-      secRechazo.classList.add('is-visible');
+    if (estadoNombre === 'Rechazado') {
+      showSection(secRechazo);
       if (motivoRechazoTexto) motivoRechazoTexto.textContent = ticket.motivo_rechazo || '';
     }
 
     // Boton cancelar
-    if (userRole === 'cliente' && estadoNombre === 'Pendiente' && ticket.creado_por === userId && secCancelar) {
-      secCancelar.classList.add('is-visible');
+    if (userRole === 'cliente' && estadoNombre === 'Pendiente' && ticket.creado_por === userId) {
+      showSection(secCancelar);
     }
 
     // Codigo
     if (ticket.fragmento_codigo) {
-      secCodigo.classList.add('is-visible');
+      showSection(secCodigo);
       lenguaje.textContent = ticket.lenguaje_codigo || 'texto';
       bloqueCodigo.className = `language-${ticket.lenguaje_codigo || 'plaintext'}`;
       bloqueCodigo.textContent = ticket.fragmento_codigo;
@@ -144,23 +172,28 @@ async function loadTicket() {
     }
 
     // Resolucion (lectura)
-    if ((estadoNombre === 'Resuelto' || estadoNombre === 'Cerrado') && ticket.resolucion) {
-      if (userRole === 'cliente') {
-        const resDiv = document.createElement('div');
-        resDiv.className = 'alert-section alert-section--success';
-        resDiv.innerHTML = `<h4 class="alert-title">Resolución</h4><p class="alert-body">${ticket.resolucion}</p>`;
-        const descContainer = descripcion.parentElement;
-        descContainer.parentElement.insertBefore(resDiv, descContainer.nextSibling);
-      } else {
-        secResolucion.classList.add('is-visible');
-        txtResolucion.value = ticket.resolucion;
-        txtResolucion.disabled = true;
-      }
+    if (userRole === 'cliente' && estadoNombre === 'Resuelto') {
+      const validDiv = document.createElement('div');
+      validDiv.className = 'alert-section alert-section--warning';
+      validDiv.innerHTML = `<h4 class="alert-title">En validación</h4><p class="alert-body">Tu ticket ha sido resuelto y se encuentra en proceso de validación por el equipo de soporte.</p>`;
+      const descContainer = descripcion.parentElement;
+      descContainer.parentElement.insertBefore(validDiv, descContainer.nextSibling);
+    } else if (userRole === 'cliente' && estadoNombre === 'Cerrado' && ticket.resolucion) {
+      const resDiv = document.createElement('div');
+      resDiv.className = 'alert-section alert-section--success';
+      resDiv.innerHTML = `<h4 class="alert-title">Resolución</h4><p class="alert-body">${ticket.resolucion}</p>`;
+      const descContainer = descripcion.parentElement;
+      descContainer.parentElement.insertBefore(resDiv, descContainer.nextSibling);
+    } else if (userRole !== 'cliente' && (estadoNombre === 'Resuelto' || estadoNombre === 'Cerrado') && ticket.resolucion) {
+      showSection(secResolucion);
+      txtResolucion.value = ticket.resolucion;
+      txtResolucion.disabled = true;
     }
 
     // Guardar original para comparar
     window.__ticketOriginal = {
       estado: estadoNombre,
+      estado_id: ticket.estado ? ticket.estado.id : null,
       categoria_id: ticket.categoria ? ticket.categoria.id : null,
       prioridad_id: ticket.prioridad ? ticket.prioridad.id : null,
       asignadoIds: (ticket.asignados || []).map(a => a.id).sort().join(','),
@@ -176,68 +209,68 @@ async function loadTicket() {
     const estadoTooltip = document.getElementById('estado-tooltip');
 
     if (userRole === 'cliente') {
-      if (gestionEstado) gestionEstado.setAttribute('hidden', '');
-      if (responsablesContainer) responsablesContainer.setAttribute('hidden', '');
+      hideSection(gestionEstado);
+      hideSection(responsablesContainer);
     } else if (userRole === 'senior') {
       // Estado select
       if (estadoNombre === 'Pendiente') {
         const tieneAsignados = (ticket.asignados || []).length > 0;
         if (tieneAsignados) {
-          selectEstado.innerHTML = '<option value="Pendiente">Pendiente</option><option value="Abierto">Abierto</option><option value="Rechazado">Rechazado</option>';
+          selectEstado.innerHTML = estadoOpt('Pendiente') + estadoOpt('Abierto') + estadoOpt('Rechazado');
           if (estadoTooltip) estadoTooltip.setAttribute('hidden', '');
         } else {
-          selectEstado.innerHTML = '<option value="Pendiente">Pendiente</option><option value="Rechazado">Rechazado</option>';
+          selectEstado.innerHTML = estadoOpt('Pendiente') + estadoOpt('Rechazado');
           if (estadoTooltip) {
             estadoTooltip.textContent = 'Asigna al menos un responsable para poder pasar a Abierto';
             estadoTooltip.removeAttribute('hidden');
           }
         }
       } else if (estadoNombre === 'Abierto') {
-        selectEstado.innerHTML = '<option value="Abierto">Abierto</option><option value="En revision">En revision</option>';
-      } else if (estadoNombre === 'En revision') {
-        selectEstado.innerHTML = '<option value="En revision">En revision</option><option value="En proceso">En proceso</option>';
+        selectEstado.innerHTML = estadoOpt('Abierto') + estadoOpt('En revisión');
+      } else if (estadoNombre === 'En revisión') {
+        selectEstado.innerHTML = estadoOpt('En revisión') + estadoOpt('En proceso');
       } else if (estadoNombre === 'En proceso') {
-        selectEstado.innerHTML = '<option value="En proceso">En proceso</option><option value="Resuelto">Resuelto</option><option value="En revision">En revision</option>';
+        selectEstado.innerHTML = estadoOpt('En proceso') + estadoOpt('Resuelto') + estadoOpt('En revisión');
       } else if (estadoNombre === 'Resuelto') {
-        selectEstado.innerHTML = '<option value="Resuelto">Resuelto</option><option value="Cerrado">Cerrado</option><option value="En proceso">En proceso</option>';
+        selectEstado.innerHTML = estadoOpt('Resuelto') + estadoOpt('Cerrado') + estadoOpt('En proceso');
       } else {
-        selectEstado.innerHTML = `<option value="${estadoNombre}">${estadoNombre}</option>`;
+        selectEstado.innerHTML = estadoOpt(estadoNombre);
         selectEstado.disabled = true;
       }
 
       // Clasificacion y responsables: ocultar si Cerrado o Rechazado
       const esTerminal = estadoNombre === 'Cerrado' || estadoNombre === 'Rechazado';
 
-      if (secClasificacion && !esTerminal) {
-        secClasificacion.classList.add('is-visible');
+      if (!esTerminal) {
+        showSection(secClasificacion);
         await loadOpcionesClasificacion(ticket);
       }
 
-      if (responsablesContainer && !esTerminal) {
-        responsablesContainer.classList.add('is-visible');
+      if (!esTerminal) {
+        showSection(responsablesContainer);
         await loadAsignacionUI(ticket.asignados || []);
       }
     } else if (userRole === 'developer' && isAsignado) {
-      if (responsablesContainer) responsablesContainer.setAttribute('hidden', '');
+      hideSection(responsablesContainer);
       if (estadoNombre === 'Abierto') {
-        selectEstado.innerHTML = '<option value="Abierto">Abierto</option><option value="En revision">En revision</option>';
-      } else if (estadoNombre === 'En revision') {
-        selectEstado.innerHTML = '<option value="En revision">En revision</option><option value="En proceso">En proceso</option>';
+        selectEstado.innerHTML = estadoOpt('Abierto') + estadoOpt('En revisión');
+      } else if (estadoNombre === 'En revisión') {
+        selectEstado.innerHTML = estadoOpt('En revisión') + estadoOpt('En proceso');
       } else if (estadoNombre === 'En proceso') {
-        selectEstado.innerHTML = '<option value="En proceso">En proceso</option><option value="Resuelto">Resuelto</option><option value="En revision">En revision</option>';
+        selectEstado.innerHTML = estadoOpt('En proceso') + estadoOpt('Resuelto') + estadoOpt('En revisión');
       } else {
-        selectEstado.innerHTML = `<option value="${estadoNombre}">${estadoNombre}</option>`;
+        selectEstado.innerHTML = estadoOpt(estadoNombre);
         selectEstado.disabled = true;
       }
     } else {
-      selectEstado.innerHTML = `<option value="${estadoNombre}">${estadoNombre}</option>`;
+      selectEstado.innerHTML = estadoOpt(estadoNombre);
       selectEstado.disabled = true;
-      if (responsablesContainer) responsablesContainer.setAttribute('hidden', '');
+      hideSection(responsablesContainer);
     }
 
     // Ocultar form observacion si cerrado/rechazado
     if (estadoNombre === 'Cerrado' || estadoNombre === 'Rechazado') {
-      formObs.setAttribute('hidden', '');
+      hideSection(formObs);
     }
 
     // Historial de estados (todos los roles)
@@ -248,8 +281,8 @@ async function loadTicket() {
     // Historial de asignaciones (solo senior y developer)
     if (historialEl && userRole !== 'cliente') {
       await loadHistorial();
-    } else if (historialAsignacionesContainer) {
-      historialAsignacionesContainer.setAttribute('hidden', '');
+    } else {
+      hideSection(historialAsignacionesContainer);
     }
 
     // Observaciones (solo senior y developer)
@@ -261,7 +294,7 @@ async function loadTicket() {
         renderObservaciones([]);
       }
     } else {
-      obsList.parentElement.setAttribute('hidden', '');
+      hideSection(obsList.parentElement);
     }
 
     loading.hidden = true;
@@ -351,17 +384,18 @@ async function loadHistorial() {
 
 // --- Eventos ---
 
-selectEstado.addEventListener('change', (e) => {
-  if (e.target.value === 'Resuelto') {
-    secResolucion.classList.add('is-visible');
+selectEstado.addEventListener('change', () => {
+  const nombre = getSelectedEstadoText();
+  if (nombre === 'Resuelto') {
+    showSection(secResolucion);
     txtResolucion.disabled = false;
   } else {
-    secResolucion.classList.remove('is-visible');
+    hideSection(secResolucion);
   }
-  if (e.target.value === 'Rechazado') {
-    if (secMotivoInput) secMotivoInput.classList.add('is-visible');
+  if (nombre === 'Rechazado') {
+    showSection(secMotivoInput);
   } else {
-    if (secMotivoInput) secMotivoInput.classList.remove('is-visible');
+    hideSection(secMotivoInput);
   }
 });
 
@@ -390,15 +424,16 @@ if (btnGuardar) {
       }
 
       // 2. Estado
-      const nuevoEstado = selectEstado.value;
-      const body = { estado: nuevoEstado };
+      const nuevoEstadoId = parseInt(selectEstado.value);
+      const nuevoEstadoNombre = getSelectedEstadoText();
+      const body = { estado_id: nuevoEstadoId };
 
-      if (nuevoEstado === 'Resuelto') {
+      if (nuevoEstadoNombre === 'Resuelto') {
         const resolucion = txtResolucion.value.trim();
         if (resolucion) body.resolucion = resolucion;
       }
 
-      if (nuevoEstado === 'Rechazado') {
+      if (nuevoEstadoNombre === 'Rechazado') {
         const motivo = motivoRechazoInput ? motivoRechazoInput.value.trim() : '';
         if (!motivo) {
           showToast('El motivo de rechazo es obligatorio', 'warning');
@@ -409,7 +444,7 @@ if (btnGuardar) {
         body.motivo_rechazo = motivo;
       }
 
-      if (nuevoEstado !== orig.estado) {
+      if (nuevoEstadoNombre !== orig.estado) {
         await apiPatch(`/tickets/${ticketId}/estado`, body);
         cambios = true;
       }
@@ -464,7 +499,7 @@ if (btnGuardarResp) {
           if (Object.keys(updateBody).length > 0) {
             await apiPatch(`/tickets/${ticketId}`, updateBody);
           }
-          await apiPatch(`/tickets/${ticketId}/estado`, { estado: 'Abierto' });
+          await apiPatch(`/tickets/${ticketId}/estado`, { estado_id: estadosMap['Abierto'] });
         }
       }
 

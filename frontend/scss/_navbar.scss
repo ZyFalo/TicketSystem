@@ -162,6 +162,18 @@
     padding: var(--sp-sm) var(--sp-md);
     border-radius: var(--radius-sm);
   }
+
+  .nav-logout-mobile {
+    margin-top: var(--sp-xs);
+    padding-top: var(--sp-sm);
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+
+    &:hover {
+      color: var(--error-text, var(--error));
+      background-color: var(--error-subtle, rgba(239, 68, 68, 0.1));
+    }
+  }
 }
 
 @keyframes fadeSlideDown {
@@ -189,8 +201,6 @@
   }
 
   .nav-user {
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none;
   }
 }

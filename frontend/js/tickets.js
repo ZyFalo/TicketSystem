@@ -108,7 +108,8 @@ waitForRole().then(() => {
     const container = document.getElementById('filtro-mis-tickets-container');
     if (container) container.hidden = false;
   }
-  if (window.__userRole === 'cliente' || window.__userRole === 'senior') {
+  // Developer NO puede crear tickets — solo cliente y senior
+  if (window.__userRole !== 'developer') {
     const btnNuevo = document.getElementById('btn-nuevo-ticket');
     if (btnNuevo) btnNuevo.hidden = false;
   }

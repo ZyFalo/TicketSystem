@@ -164,6 +164,13 @@
 
     .alert-title { color: var(--success-text); }
   }
+
+  &--warning {
+    background-color: var(--warning-subtle);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+
+    .alert-title { color: var(--warning-text); }
+  }
 }
 
 // ─── Estado tooltip ────────────────────────────────────

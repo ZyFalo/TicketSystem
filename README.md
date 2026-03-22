@@ -3,7 +3,7 @@
 Sistema web para gestión de tickets de soporte técnico con módulo de revisión de fragmentos de código.
 
 **Materia:** Programación Web II
-**Docente:** Javier Ochoa
+**Desarrollador:** William Peña
 
 ## Stack
 

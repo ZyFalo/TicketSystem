@@ -41,11 +41,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Convert auth link to logout button
     authLink.textContent = `Logout (${user.nombre})`;
     authLink.href = '#';
-    authLink.addEventListener('click', async (e) => {
+    const handleLogout = async (e) => {
       e.preventDefault();
       try { await apiPost('/logout'); } catch (_) {}
       window.location.href = '/login';
-    });
+    };
+    authLink.addEventListener('click', handleLogout);
+
+    // Mobile logout link
+    const logoutMobile = document.getElementById('nav-logout-m');
+    if (logoutMobile) {
+      logoutMobile.hidden = false;
+      logoutMobile.textContent = `Cerrar sesion (${user.nombre})`;
+      logoutMobile.addEventListener('click', handleLogout);
+    }
 
     // Show/hide nav links based on role (desktop + mobile)
     if (user.rol === 'cliente') {
