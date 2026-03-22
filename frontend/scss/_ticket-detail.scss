@@ -271,7 +271,7 @@
 
   .detail-sidebar {
     position: static;
-    order: -1; // Gestión aparece antes que observaciones en móvil
+    // On mobile, show sidebar panels in a 2-col mini-grid
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--sp-md);
